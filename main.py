@@ -44,11 +44,12 @@ for x in range(0,players):
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
 # Connect the socket to the port where the server is listening
 server_address = ('10.0.107.188', 8008)
 sock.connect(server_address)
-initdata = sock.recv(1024)
+initdata = sock.recv(4096)
 
 initdata = initdata.decode('UTF-8')
 split = initdata.split("\n")
@@ -88,8 +89,11 @@ def networkthread(clientid):
 			data = sock.recv(1024)
 		except:
 			break
+
 			
 		
+		if data:
+			print("data recv")
 		data = data.decode('UTF-8')
 		split = data.split("\n")
 		for p in split:
@@ -173,23 +177,25 @@ while True:
 		
 		
 		
-		clock.tick(FPS)
+		
 		screen.fill((128,128,128))
 
 		#player.render(screen)
 
 		#player.physicsHandler()
+		clock.tick(FPS)
 
 		for p in multiplays:
 			if p.index == clientid:
 				if inputs.run(state,p) == True:
-					print("pl")
-				data2 = "pos;"+str(int(p.x))+";"+str(int(p.y))+"\n"
-				data2 = data2.encode('UTF-8')
-				sock.send(data2)
+					data2 = "pos;"+str(int(p.x))+";"+str(int(p.y))+"\n"
+					data2 = data2.encode('UTF-8')
+					print("data sent")
+					sock.send(data2)
 
 
 
+			
 			p.render(screen)
 			if p.index == clientid:
 				p.physicsHandler()
