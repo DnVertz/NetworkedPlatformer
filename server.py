@@ -1,6 +1,6 @@
 import threading, uuid, asyncio
 
-HOST = '127.0.0.1'
+HOST = '10.0.107.188'
 PORT = 8008
 
 players = []
@@ -42,6 +42,10 @@ def sendPlayerInit(player, writer):
 	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	writer.write(data.encode('UTF-8'))
 
+def sendPlayerSpawn(player, writer):
+	data = "spawn;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
+	writer.write(data.encode('UTF-8'))
+
 def sendPlayerJoin(player):
 	data = "join;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	broadcast(data.encode('UTF-8'))
@@ -54,7 +58,7 @@ class Player:
 	def __init__(self, conn):
 		self.id = uuid.uuid1()
 		self.conn = conn
-		self.x = 0
+		self.x = 20
 		self.y = 0
 	def setPosition(self, x, y):
 		self.x = x
@@ -81,6 +85,7 @@ class PositionUpdate:
 
 def protocolDecode(playerID, data):
 	split = data.split(";")
+	print(split)
 	if split[0] == "pos":
 		# decode position update packet
 		# position packet structure pos;x;y
@@ -94,13 +99,20 @@ async def handler(reader, writer):
 	player = Player(writer)
 	playerID = player.id
 	players.append(player)
-	players_lock.release()
 	sendPlayerInit(player, writer) #send init id and pos to player
+	for p in players:
+		sendPlayerSpawn(p,writer)
+	players_lock.release()
 	sendPlayerJoin(player) #broadcast init id and pos to all players
 	while True:
-			raw = await reader.readline()
-			if not raw:
+
+			try:
+				raw = await reader.readline()
+				if not raw:
+					break
+			except:
 				break
+
 			data = raw.decode()
 			packet = protocolDecode(playerID, data)
 			if isinstance(packet, PositionUpdate):
@@ -114,6 +126,7 @@ async def main():
     server = await asyncio.start_server(handler, HOST, PORT)
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')
+
     async with server:
         await server.serve_forever()
 

@@ -4,14 +4,20 @@ import ui
 def run(state,player):
 	if state.state == "game":
 		keys = pygame.key.get_pressed()
+		
+
 		if keys[pygame.K_d]:
 				player.moveRight()
+				
 		
 		if keys[pygame.K_a]:
 				player.moveLeft()
 
 		if keys[pygame.K_SPACE]:
 				player.moveUp()
+		if keys:
+			return True
+
 
 def handleMouse(pygame, player):
 	player_pos = pygame.math.Vector2(player.x, player.y)

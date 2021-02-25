@@ -1,5 +1,6 @@
 
 import pygame
+import numpy
 class player:
 	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0):
 		self.hitboxes = hitboxes
@@ -51,16 +52,22 @@ class player:
 
 	def render(self, screen):
 		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
-		#rotated = pygame.transform.rotate(pygame.image.load(r'playerm.png') ,self.Θ)
-		pygame.draw.rect(screen,(255,255,255),rects)
-		"""
 
-		rect = pygame.Rect((self.x, self.y), (self.w, self.h))
-		#rotated = pygame.transform.rotate(pygame.image.load(r'playerm.png') ,self.Θ)
-		rotated = pygame.transform.rotate( self.image,0)
-		rotatedrect = rotated.get_rect(center=rect.center)
+		img_surface = pygame.image.load(r'playerm.png')
+		img_array = pygame.surfarray.array3d(img_surface)         # Convert it into an 3D array
+		colored_img = numpy.array(img_array)                      # Array thing
+		colored_img[:, :, 0] = 180   # <-- Red
+		colored_img[:, :, 1] = 28 # <-- Green
+		colored_img[:, :, 2] = 180    # <-- Blue
+		img_surface = pygame.surfarray.make_surface(colored_img)
+
+		
+		rotated = pygame.transform.rotate(img_surface,0)
+		rotatedrect = rotated.get_rect(center=rects.center)
+
 		#screen.blit(rotated, rotatedrect)
-		screen.blit(rotated, rotatedrect)"""
+
+		screen.blit(rotated, rotatedrect)
 
 
 	def setPos(self, x, y):

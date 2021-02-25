@@ -2,7 +2,7 @@ import pygame
 import numpy
 import random
 class actor:
-	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0,index = 0):
+	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0,index= 0):
 		self.hitboxes = hitboxes
 		self.isjump = False
 		self.x = x
@@ -13,6 +13,7 @@ class actor:
 		self.h = h
 		self.Θ = Θ
 		self.index = index 
+		self.id = 0
 
 	def physicsHandler(self):
 		# gravity
@@ -53,13 +54,19 @@ class actor:
 		"""
 		
 		pygame.draw.rect(screen,(255,255,255),rects)"""
+		numbs = []
+		for word in self.index:
+			if word.isdigit():
+				numbs.append(int(word))
+		number = (sum(numbs) / len(numbs))*10
+
 
 		img_surface = pygame.image.load(r'playerm.png')
 		img_array = pygame.surfarray.array3d(img_surface)         # Convert it into an 3D array
 		colored_img = numpy.array(img_array)                      # Array thing
 		colored_img[:, :, 0] = 180   # <-- Red
-		colored_img[:, :, 1] = 28*self.index*2 # <-- Green
-		colored_img[:, :, 2] = 180*self.index    # <-- Blue
+		colored_img[:, :, 1] = 28*number*2 # <-- Green
+		colored_img[:, :, 2] = 180*number    # <-- Blue
 		img_surface = pygame.surfarray.make_surface(colored_img)
 
 		
@@ -72,6 +79,7 @@ class actor:
 
 
 	def setPos(self, x, y):
+
 		self.x = x
 		self.y = y
 
@@ -84,3 +92,23 @@ class actor:
 			if self.isjump == False and self.vy == 0:
 				self.vy += -25
 				self.isjump = True
+
+	def moveUp(self):
+		if self.inBounds(self.x, self.y) == False:
+			if self.isjump == False and self.vy == 0:
+				self.vy += -25
+				self.isjump = True
+				
+
+	def moveLeft(self):
+		if self.inBounds(self.x , self.y) == False:
+			self.vx -= 1.5
+
+
+	def moveRight(self):
+		if self.inBounds(self.x, self.y) == False:
+			self.vx += 1.5
+
+
+	def setAngle(self, Θ=0):
+			self.Θ = Θ
