@@ -14,6 +14,20 @@ class actor:
 		self.Θ = Θ
 		self.index = index 
 		self.id = 0
+		numbs = []
+		for word in self.index:
+			if word.isdigit():
+				numbs.append(int(word))
+		number = (sum(numbs) / len(numbs))*10
+		img_surface = pygame.image.load(r'playerm.png')
+		
+		img_array = pygame.surfarray.array3d(img_surface)         # Convert it into an 3D array
+		colored_img = numpy.array(img_array)                      # Array thing
+		colored_img[:, :, 0] = 180   # <-- Red
+		colored_img[:, :, 1] = 28*number*2 # <-- Green
+		colored_img[:, :, 2] = 180*number    # <-- Blue
+		img_surface = pygame.surfarray.make_surface(colored_img)
+		self.image = img_surface
 
 	def physicsHandler(self):
 		# gravity
@@ -54,23 +68,13 @@ class actor:
 		"""
 		
 		pygame.draw.rect(screen,(255,255,255),rects)"""
-		numbs = []
-		for word in self.index:
-			if word.isdigit():
-				numbs.append(int(word))
-		number = (sum(numbs) / len(numbs))*10
+		
 
 
-		img_surface = pygame.image.load(r'playerm.png')
-		img_array = pygame.surfarray.array3d(img_surface)         # Convert it into an 3D array
-		colored_img = numpy.array(img_array)                      # Array thing
-		colored_img[:, :, 0] = 180   # <-- Red
-		colored_img[:, :, 1] = 28*number*2 # <-- Green
-		colored_img[:, :, 2] = 180*number    # <-- Blue
-		img_surface = pygame.surfarray.make_surface(colored_img)
+
 
 		
-		rotated = pygame.transform.rotate(img_surface,0)
+		rotated = pygame.transform.rotate(self.image,0)
 		rotatedrect = rotated.get_rect(center=rects.center)
 
 		#screen.blit(rotated, rotatedrect)

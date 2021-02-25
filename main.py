@@ -47,7 +47,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
 # Connect the socket to the port where the server is listening
-server_address = ('10.0.107.188', 8008)
+server_address = ('localhost', 8008)
 sock.connect(server_address)
 initdata = sock.recv(4096)
 
@@ -76,17 +76,21 @@ for p in split:
 titlefont = pygame.font.Font(r'arial.ttf', 40)
 titlefont2 = pygame.font.Font(r'arial.ttf', 10)
 clock = pygame.time.Clock() 
+thrcou = 0
+maincou= 0
 FPS = 70
 
 
 
 def networkthread(clientid):
 	buffer = ""
+
+	clock.tick(FPS)
 	while True:
 
 		
 		try:
-			data = sock.recv(1024)
+			data = sock.recv(4096)
 		except:
 			break
 
@@ -110,7 +114,6 @@ def networkthread(clientid):
 
 			if split2[0] == "pos":
 				if len(split2) == 4:
-					print(split2[3])
 					if str(split2[1]) != str(clientid):
 						for x in multiplays:
 							if x.index == split2[1]:
@@ -152,7 +155,6 @@ while True:
 
 		if event.type == pygame.QUIT:
 			#sock.send("poo")
-			print("break")
 			
 			quitol = True
 			
@@ -190,6 +192,7 @@ while True:
 			if p.index == clientid:
 				if inputs.run(state,p) == True:
 					data2 = "pos;"+str(int(p.x))+";"+str(int(p.y))+"\n"
+					print(data2)
 					data2 = data2.encode('UTF-8')
 					sock.send(data2)
 

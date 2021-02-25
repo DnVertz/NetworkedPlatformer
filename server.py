@@ -1,6 +1,6 @@
 import threading, uuid, asyncio
 
-HOST = '10.0.107.188'
+HOST = 'localhost'
 PORT = 8008
 
 players = []
