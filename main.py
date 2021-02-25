@@ -92,8 +92,7 @@ def networkthread(clientid):
 
 			
 		
-		if data:
-			print("data recv")
+
 		data = data.decode('UTF-8')
 		split = data.split("\n")
 		for p in split:
@@ -111,11 +110,13 @@ def networkthread(clientid):
 
 			if split2[0] == "pos":
 				if len(split2) == 4:
+					print(split2[3])
 					if str(split2[1]) != str(clientid):
 						for x in multiplays:
 							if x.index == split2[1]:
 								#print("rundsuhkajdgskj")
-								x.setPos(int(split2[2]),int(split2[3]))
+								if split2[2].isdigit() and split2[3].isdigit():
+									x.setPos(int(split2[2]),int(split2[3]))
 				
 
 			
@@ -190,7 +191,6 @@ while True:
 				if inputs.run(state,p) == True:
 					data2 = "pos;"+str(int(p.x))+";"+str(int(p.y))+"\n"
 					data2 = data2.encode('UTF-8')
-					print("data sent")
 					sock.send(data2)
 
 
