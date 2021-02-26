@@ -1,6 +1,7 @@
 import threading, uuid, asyncio
+import socket
 
-HOST = 'localhost'
+HOST = '10.0.110.42'
 PORT = 8008
 
 players = []
@@ -26,10 +27,10 @@ players_lock = threading.Lock()
 """
 
 def broadcast(data):
-	players_lock.acquire()
+	#players_lock.acquire()
 	for player in players:
 		player.conn.write(data)
-	players_lock.release()
+	#players_lock.release()
 
 def removePlayer(playerID):
 	players_lock.acquire()
@@ -72,13 +73,13 @@ class PositionUpdate:
 		self.x = x
 		self.y = y
 	def updatePlayer(self):
-		players_lock.acquire()
+		#players_lock.acquire()
 		for i in range(len(players)):
 			if players[i].id == self.id:
 				players[i].x = self.x
 				players[i].y = self.y
 				break
-		players_lock.release()
+		#players_lock.release()
 	def forwardToClients(self):
 		data = "pos;"+str(self.id)+";"+str(self.x)+";"+str(self.y)+"\n"
 		broadcast(data.encode('UTF-8'))
@@ -93,6 +94,7 @@ def protocolDecode(playerID, data):
 		return posUpdate
 
 async def handler(reader, writer):
+
 	addr = writer.get_extra_info('peername')
 	print(f'Connection from {addr} \n')
 	players_lock.acquire()
@@ -123,7 +125,8 @@ async def handler(reader, writer):
 	sendPlayerLeave(playerID)
 
 async def main():
-    server = await asyncio.start_server(handler, HOST, PORT)
+    server = await asyncio.start_server(handler, HOST, PORT,limit=30000)
+    #
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')
 

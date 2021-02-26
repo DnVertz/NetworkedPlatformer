@@ -44,12 +44,15 @@ for x in range(0,players):
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+#sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 3000)
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 20)
 
 # Connect the socket to the port where the server is listening
-server_address = ('localhost', 8008)
+server_address = ('10.0.110.42', 8008)
 sock.connect(server_address)
-initdata = sock.recv(4096)
+
+
+initdata = sock.recv(100)
 
 initdata = initdata.decode('UTF-8')
 split = initdata.split("\n")
@@ -90,7 +93,7 @@ def networkthread(clientid):
 
 		
 		try:
-			data = sock.recv(4096)
+			data = sock.recv(100)
 		except:
 			break
 
@@ -219,6 +222,7 @@ while True:
 
 	pygame.display.flip()
 sock.close()
+sock2.close()
 
 
 
