@@ -44,15 +44,15 @@ for x in range(0,players):
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 3000)
-sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 20)
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY,3000)
+#sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 30000)
 
 # Connect the socket to the port where the server is listening
-server_address = ('10.0.110.42', 8008)
+server_address = ('172.20.10.2', 8008)
 sock.connect(server_address)
 
 
-initdata = sock.recv(100)
+initdata = sock.recv(4096)
 
 initdata = initdata.decode('UTF-8')
 split = initdata.split("\n")
@@ -86,22 +86,19 @@ FPS = 70
 
 
 def networkthread(clientid):
-	buffer = ""
+	buff = ""
 
-	clock.tick(FPS)
+	
 	while True:
-
-		
 		try:
-			data = sock.recv(100)
+			data = sock.recv(4096)
+			
 		except:
 			break
 
-			
-		
-
 		data = data.decode('UTF-8')
 		split = data.split("\n")
+
 		for p in split:
 			split2 = p.split(";")
 
@@ -145,8 +142,10 @@ def networkthread(clientid):
 
 thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
+clock.tick(FPS)
 
 while True:
+
 	if quitol == True:
 		break
 
@@ -222,7 +221,6 @@ while True:
 
 	pygame.display.flip()
 sock.close()
-sock2.close()
 
 
 

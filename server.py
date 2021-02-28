@@ -1,7 +1,7 @@
 import threading, uuid, asyncio
 import socket
 
-HOST = '10.0.110.42'
+HOST = '172.20.10.2'
 PORT = 8008
 
 players = []
@@ -27,17 +27,14 @@ players_lock = threading.Lock()
 """
 
 def broadcast(data):
-	#players_lock.acquire()
 	for player in players:
 		player.conn.write(data)
-	#players_lock.release()
+		print("b",data,flush= True)
 
 def removePlayer(playerID):
-	players_lock.acquire()
 	for player in players:
 		if player.id == playerID:
 			players.remove(player)
-	players_lock.release()
 
 def sendPlayerInit(player, writer):
 	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
@@ -97,14 +94,13 @@ async def handler(reader, writer):
 
 	addr = writer.get_extra_info('peername')
 	print(f'Connection from {addr} \n')
-	players_lock.acquire()
 	player = Player(writer)
 	playerID = player.id
 	players.append(player)
 	sendPlayerInit(player, writer) #send init id and pos to player
 	for p in players:
 		sendPlayerSpawn(p,writer)
-	players_lock.release()
+
 	sendPlayerJoin(player) #broadcast init id and pos to all players
 	while True:
 
@@ -125,7 +121,7 @@ async def handler(reader, writer):
 	sendPlayerLeave(playerID)
 
 async def main():
-    server = await asyncio.start_server(handler, HOST, PORT,limit=30000)
+    server = await asyncio.start_server(handler, HOST, PORT)
     #
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')
