@@ -1,7 +1,7 @@
 import threading, uuid, asyncio
 import socket
 
-HOST = '172.20.10.2'
+HOST = 'localhost'
 PORT = 8008
 
 players = []
@@ -26,9 +26,12 @@ players_lock = threading.Lock()
 
 """
 
-def broadcast(data):
+async def broadcast(data):
 	for player in players:
-		player.conn.write(data)
+		try:
+			await player.conn.write(data)
+		except:
+			print("nahh")
 		print("b",data,flush= True)
 
 def removePlayer(playerID):
@@ -44,13 +47,13 @@ def sendPlayerSpawn(player, writer):
 	data = "spawn;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	writer.write(data.encode('UTF-8'))
 
-def sendPlayerJoin(player):
+async def sendPlayerJoin(player):
 	data = "join;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
-	broadcast(data.encode('UTF-8'))
+	await broadcast(data.encode('UTF-8'))
 
-def sendPlayerLeave(playerID):
+async def sendPlayerLeave(playerID):
 	data = "leave;"+str(playerID)+"\n"
-	broadcast(data.encode('UTF-8'))
+	await broadcast(data.encode('UTF-8'))
 
 class Player:
 	def __init__(self, conn):
@@ -77,9 +80,9 @@ class PositionUpdate:
 				players[i].y = self.y
 				break
 		#players_lock.release()
-	def forwardToClients(self):
+	async def forwardToClients(self):
 		data = "pos;"+str(self.id)+";"+str(self.x)+";"+str(self.y)+"\n"
-		broadcast(data.encode('UTF-8'))
+		await broadcast(data.encode('UTF-8'))
 
 def protocolDecode(playerID, data):
 	split = data.split(";")
@@ -101,7 +104,7 @@ async def handler(reader, writer):
 	for p in players:
 		sendPlayerSpawn(p,writer)
 
-	sendPlayerJoin(player) #broadcast init id and pos to all players
+	await sendPlayerJoin(player) #broadcast init id and pos to all players
 	while True:
 
 			try:
@@ -115,10 +118,10 @@ async def handler(reader, writer):
 			packet = protocolDecode(playerID, data)
 			if isinstance(packet, PositionUpdate):
 				packet.updatePlayer()
-				packet.forwardToClients() #broadcast
+				await packet.forwardToClients() #broadcast
 	writer.close()
 	removePlayer(playerID)
-	sendPlayerLeave(playerID)
+	await sendPlayerLeave(playerID)
 
 async def main():
     server = await asyncio.start_server(handler, HOST, PORT)

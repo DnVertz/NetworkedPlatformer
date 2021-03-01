@@ -44,11 +44,11 @@ for x in range(0,players):
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY,3000)
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY,4096)
 #sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 30000)
 
 # Connect the socket to the port where the server is listening
-server_address = ('172.20.10.2', 8008)
+server_address = ('localhost', 8008)
 sock.connect(server_address)
 
 
