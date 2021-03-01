@@ -18,14 +18,14 @@ class actor:
 		for word in self.index:
 			if word.isdigit():
 				numbs.append(int(word))
-		number = (sum(numbs) / len(numbs))*10
+		number = (sum(numbs) / len(numbs))*40
 		img_surface = pygame.image.load(r'playerm.png')
 		
 		img_array = pygame.surfarray.array3d(img_surface)         # Convert it into an 3D array
 		colored_img = numpy.array(img_array)                      # Array thing
-		colored_img[:, :, 0] = 180   # <-- Red
-		colored_img[:, :, 1] = 28*number*2 # <-- Green
-		colored_img[:, :, 2] = 180*number    # <-- Blue
+		colored_img[:, :, 0] = 10*number   # <-- Red
+		colored_img[:, :, 1] = 20*number # <-- Green
+		colored_img[:, :, 2] = 30*number    # <-- Blue
 		img_surface = pygame.surfarray.make_surface(colored_img)
 		self.image = img_surface
 

@@ -1,8 +1,10 @@
 import threading, uuid, asyncio
 import socket
 
-HOST = 'localhost'
-PORT = 8008
+
+HOST = '192.168.0.10'
+PORT = 8007
+
 
 players = []
 players_lock = threading.Lock()
@@ -28,11 +30,11 @@ players_lock = threading.Lock()
 
 async def broadcast(data):
 	for player in players:
+
 		try:
 			await player.conn.write(data)
 		except:
-			print("nahh")
-		print("b",data,flush= True)
+			pass
 
 def removePlayer(playerID):
 	for player in players:
@@ -86,7 +88,6 @@ class PositionUpdate:
 
 def protocolDecode(playerID, data):
 	split = data.split(";")
-	print(split)
 	if split[0] == "pos":
 		# decode position update packet
 		# position packet structure pos;x;y
@@ -94,6 +95,7 @@ def protocolDecode(playerID, data):
 		return posUpdate
 
 async def handler(reader, writer):
+	i = 0
 
 	addr = writer.get_extra_info('peername')
 	print(f'Connection from {addr} \n')
@@ -106,6 +108,7 @@ async def handler(reader, writer):
 
 	await sendPlayerJoin(player) #broadcast init id and pos to all players
 	while True:
+			
 
 			try:
 				raw = await reader.readline()
@@ -124,7 +127,7 @@ async def handler(reader, writer):
 	await sendPlayerLeave(playerID)
 
 async def main():
-    server = await asyncio.start_server(handler, HOST, PORT)
+    server = await asyncio.start_server( handler, HOST, PORT)
     #
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')

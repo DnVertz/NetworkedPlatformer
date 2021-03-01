@@ -21,6 +21,7 @@ spawny = 100
 i = 0
 quitol = False
 clientid = 1
+player1 = None
 #corner(x,y),(width,height)
 #,[(500,10),(1,500)]
 screen = pygame.display.set_mode((width, height))
@@ -48,7 +49,7 @@ sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY,4096)
 #sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 30000)
 
 # Connect the socket to the port where the server is listening
-server_address = ('localhost', 8008)
+server_address = ('192.168.0.12', 8007)
 sock.connect(server_address)
 
 
@@ -61,6 +62,7 @@ for p in split:
 	if split2[0] == "init":
 		clientid = split2[1]
 		multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
+		player1 = actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1])
 
 
 
@@ -81,7 +83,7 @@ titlefont2 = pygame.font.Font(r'arial.ttf', 10)
 clock = pygame.time.Clock() 
 thrcou = 0
 maincou= 0
-FPS = 70
+FPS = 65
 
 
 
@@ -97,7 +99,14 @@ def networkthread(clientid):
 			break
 
 		data = data.decode('UTF-8')
-		split = data.split("\n")
+		if buff != "":
+			data = data + buff
+			buff = ""
+		if not data.endswith("\n"):
+			split = data.split("\n")
+			buff = split[len(split-1)]
+		else:
+			split = data.split("\n")
 
 		for p in split:
 			split2 = p.split(";")
@@ -113,14 +122,11 @@ def networkthread(clientid):
 					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
 
 			if split2[0] == "pos":
-				if len(split2) == 4:
-					if str(split2[1]) != str(clientid):
-						for x in multiplays:
-							if x.index == split2[1]:
-								#print("rundsuhkajdgskj")
-								if split2[2].isdigit() and split2[3].isdigit():
-									x.setPos(int(split2[2]),int(split2[3]))
-				
+				if str(split2[1]) != str(clientid):
+					for x in multiplays:
+						if x.index == split2[1]:
+							x.setPos(int(split2[2]),int(split2[3]))
+		
 
 			
 
@@ -142,9 +148,9 @@ def networkthread(clientid):
 
 thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
-clock.tick(FPS)
 
 while True:
+
 
 	if quitol == True:
 		break
@@ -188,22 +194,39 @@ while True:
 		#player.render(screen)
 
 		#player.physicsHandler()
-		clock.tick(FPS)
+		#
 
-		for p in multiplays:
+		"""for p in multiplays:
+
 			if p.index == clientid:
 				if inputs.run(state,p) == True:
 					data2 = "pos;"+str(int(p.x))+";"+str(int(p.y))+"\n"
 					print(data2)
 					data2 = data2.encode('UTF-8')
 					sock.send(data2)
+				p.render(screen)
+			if p.index == clientid:
+				p.physicsHandler()"""
+
+		clock.tick(FPS)
+
+		for p in multiplays:
+			if p.index != clientid:
+				p.render(screen)
+
+		inputs.run(state,player1)
+		data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+		print(data2)
+		data2 = data2.encode('UTF-8')
+		sock.send(data2)
+		player1.render(screen)
+		player1.physicsHandler()
+		
 
 
 
 			
-			p.render(screen)
-			if p.index == clientid:
-				p.physicsHandler()
+		
 
 		
 		
@@ -215,7 +238,7 @@ while True:
 				textRect = textSurf.get_rect()
 				textRect.center = ((x[0][0]+(80)), (x[0][1]+210))
 				screen.blit(textSurf, textRect)"""
-		inputs.handleMouse(pygame, player)
+		#inputs.handleMouse(pygame, player)
 
 		
 
