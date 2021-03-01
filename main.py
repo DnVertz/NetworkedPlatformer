@@ -9,6 +9,8 @@ import actor
 import random
 import socket
 import os
+HOST = '192.168.0.10'
+PORT = 8007
 
 
 state = ui.uistate()
@@ -21,6 +23,7 @@ spawny = 100
 i = 0
 quitol = False
 clientid = 1
+title = "Platformer"
 player1 = None
 #corner(x,y),(width,height)
 #,[(500,10),(1,500)]
@@ -36,21 +39,74 @@ for x in coll:
 
 state.state = "start"
 pygame.init()
+titlefont = pygame.font.Font(r'arial.ttf', 40)
 
-player = player.player(width/2, height/2, 25, 50,0,hitbox)
+while True:
+
+
+
+	if quitol == True:
+		break
+
+
+	
+		    
+	events = pygame.event.get()
+	for event in events:
+
+		if event.type == pygame.QUIT:
+			os._exit(1)
+
+	screen.fill((128,128,128))
+			
+
+
+
+
+	
+	if state.state == "start":
+
+		screen.fill((128,128,128))
+		start = menu.drawStart(screen, titlefont, state,events,title)
+		if start is not None:
+			connec = start
+			state.state = "joincheck"
+	else:
+		try: 
+			print(str(connec[0]))
+			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY,4096)
+			server_address = (str(connec[0]), int(connec[1]))
+			sock.connect(server_address)
+			break
+		except:
+			title = "Wrong IP/Port!!!!"
+			state.state = "start"
+
+
+	"""elif state.state== "join":
+		screen.fill((128,128,128))
+		join = menu.drawJoin(screen, titlefont, state,events)"""
+
+	pygame.display.flip()
+
+
+
+#player = player.player(width/2, height/2, 25, 50,0,hitbox)
 """
 for x in range(0,players):
 	multiplays.append(actor.actor(width/2, height/2, 25, 50,0,hitbox,x)) """
 
 
 # Create a TCP/IP socket
+"""
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY,4096)
 #sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 30000)
 
 # Connect the socket to the port where the server is listening
-server_address = ('192.168.0.12', 8007)
-sock.connect(server_address)
+server_address = (HOST, PORT)
+sock.connect(server_address)"""
 
 
 initdata = sock.recv(4096)
@@ -78,7 +134,7 @@ for p in split:
 
 
 
-titlefont = pygame.font.Font(r'arial.ttf', 40)
+
 titlefont2 = pygame.font.Font(r'arial.ttf', 10)
 clock = pygame.time.Clock() 
 thrcou = 0
@@ -171,6 +227,7 @@ while True:
 
 
 	
+	"""
 	if state.state == "start":
 		screen.fill((128,128,128))
 		start = menu.drawStart(screen, titlefont, state,events)
@@ -182,65 +239,63 @@ while True:
 			pygame.quit()
 	elif state.state== "join":
 		screen.fill((128,128,128))
-		join = menu.drawJoin(screen, titlefont, state,events)
-
-	else:
+		join = menu.drawJoin(screen, titlefont, state,events)"""
 		
 		
 		
-		
-		screen.fill((128,128,128))
+	
+	screen.fill((128,128,128))
 
-		#player.render(screen)
+	#player.render(screen)
 
-		#player.physicsHandler()
-		#
+	#player.physicsHandler()
+	#
 
-		"""for p in multiplays:
+	"""for p in multiplays:
 
-			if p.index == clientid:
-				if inputs.run(state,p) == True:
-					data2 = "pos;"+str(int(p.x))+";"+str(int(p.y))+"\n"
-					print(data2)
-					data2 = data2.encode('UTF-8')
-					sock.send(data2)
-				p.render(screen)
-			if p.index == clientid:
-				p.physicsHandler()"""
+		if p.index == clientid:
+			if inputs.run(state,p) == True:
+				data2 = "pos;"+str(int(p.x))+";"+str(int(p.y))+"\n"
+				print(data2)
+				data2 = data2.encode('UTF-8')
+				sock.send(data2)
+			p.render(screen)
+		if p.index == clientid:
+			p.physicsHandler()"""
 
-		clock.tick(FPS)
+	clock.tick(FPS)
 
-		for p in multiplays:
-			if p.index != clientid:
-				p.render(screen)
+	for p in multiplays:
+		if p.index != clientid:
+			p.render(screen)
 
-		inputs.run(state,player1)
-		data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
-		print(data2)
-		data2 = data2.encode('UTF-8')
-		sock.send(data2)
-		player1.render(screen)
-		player1.physicsHandler()
-		
+	inputs.run(state,player1)
+
+	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+	data2 = data2.encode('UTF-8')
+	sock.send(data2)
+	player1.render(screen)
+	player1.physicsHandler()
+	
 
 
-
-			
-		
 
 		
-		
-		for x in coll:
-			if coll.index(x) >= 4:
-				pygame.draw.rect(screen,(60,60,60),(x[0][0],x[0][1],x[1][0],x[1][1]))
-				"""
-				textSurf = titlefont2.render("troll face gaming (this is a goomba)", 1, (255,255,255))# and this lol
-				textRect = textSurf.get_rect()
-				textRect.center = ((x[0][0]+(80)), (x[0][1]+210))
-				screen.blit(textSurf, textRect)"""
-		#inputs.handleMouse(pygame, player)
+	
 
-		
+	
+	
+	for x in coll:
+		if coll.index(x) >= 4:
+			pygame.draw.rect(screen,(60,60,60),(x[0][0],x[0][1],x[1][0],x[1][1]))
+			"""
+			textSurf = titlefont2.render("troll face gaming (this is a goomba)", 1, (255,255,255))# and this lol
+			textRect = textSurf.get_rect()
+			textRect.center = ((x[0][0]+(80)), (x[0][1]+210))
+			screen.blit(textSurf, textRect)"""
+	#inputs.handleMouse(pygame, player)
+
+	
 
 	pygame.display.flip()
 sock.close()

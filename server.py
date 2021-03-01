@@ -2,8 +2,8 @@ import threading, uuid, asyncio
 import socket
 
 
-HOST = '192.168.0.10'
-PORT = 8007
+HOST = '10.0.108.80'
+PORT = 8008
 
 
 players = []
