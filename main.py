@@ -57,7 +57,7 @@ while True:
 		if event.type == pygame.QUIT:
 			os._exit(1)
 
-	screen.fill((128,128,128))
+	#screen.fill((128,128,128))
 			
 
 
@@ -148,6 +148,7 @@ def networkthread(clientid):
 
 	
 	while True:
+		clock.tick(FPS)
 		try:
 			data = sock.recv(4096)
 			
@@ -160,7 +161,7 @@ def networkthread(clientid):
 			buff = ""
 		if not data.endswith("\n"):
 			split = data.split("\n")
-			buff = split[len(split-1)]
+			buff = split[len(split)-1]
 		else:
 			split = data.split("\n")
 
@@ -263,13 +264,14 @@ while True:
 		if p.index == clientid:
 			p.physicsHandler()"""
 
-	clock.tick(FPS)
+	
 
 	for p in multiplays:
 		if p.index != clientid:
 			p.render(screen)
 
 	inputs.run(state,player1)
+	clock.tick(FPS)
 
 	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
 	data2 = data2.encode('UTF-8')

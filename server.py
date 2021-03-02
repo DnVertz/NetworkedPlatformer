@@ -2,7 +2,7 @@ import threading, uuid, asyncio
 import socket
 
 
-HOST = '10.0.108.80'
+HOST = '10.0.108.87'
 PORT = 8008
 
 
@@ -33,6 +33,7 @@ async def broadcast(data):
 
 		try:
 			await player.conn.write(data)
+			await player.conn.drain()
 		except:
 			pass
 
@@ -111,6 +112,7 @@ async def handler(reader, writer):
 			
 
 			try:
+				#raw = await reader.readline()
 				raw = await reader.readline()
 				if not raw:
 					break
