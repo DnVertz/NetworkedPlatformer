@@ -8,7 +8,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 8008))
 HOST = str(s.getsockname()[0])
 s.close()
-#exit()
 
 
 players = []

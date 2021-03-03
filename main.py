@@ -77,17 +77,15 @@ for p in split:
 
 clock = pygame.time.Clock() 
 FPS = 60
+
 def networkthread(clientid):
-
 	while True:
-
 		try:
 			data = sock.recv(4096)
 		except:
 			break
 
 		data = data.decode('UTF-8')
-
 		split = data.split("\n")
 		for p in split:
 			split2 = p.split(";")

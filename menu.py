@@ -18,8 +18,8 @@ def drawStart(screen, titlefont, state,events,title):
 	startbutton3 = ui.button("Done", 370, 385, 300, 75)
 	startbutton3.render(screen)
 
-	ip = special[0].render(screen,events,clock)
-	port = special[1].render(screen,events,clock)
+	ip = special[0].render(screen,events)
+	port = special[1].render(screen,events)
 
 	if ip is not None:
 		complete[0] = ip

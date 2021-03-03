@@ -59,7 +59,7 @@ class textbutton():
 		self.colour = defaultColour
 
 
-	def render(self, screen,events,bruh):
+	def render(self, screen,events):
 		mouseX, mouseY = pygame.mouse.get_pos()
 		image = pygame.Surface([self.w, self.h])
 		if self.x + self.w > mouseX > self.x and self.y + self.h > mouseY > self.y:
