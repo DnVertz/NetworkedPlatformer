@@ -1,5 +1,4 @@
 import pygame
-clock =0 
 #used when rendering the complex buttons in menus
 class uistate:
 	def __init__(self):
@@ -52,7 +51,8 @@ class textbutton():
 		self.y = y
 		self.w = w
 		self.h = h
-		self.pointer = "|"
+		self.clock = 0
+		self.pointer = " "
 		self.lst = []
 		self.activeColour = activeColour
 		self.defaultColour = defaultColour
@@ -60,20 +60,10 @@ class textbutton():
 
 
 	def render(self, screen,events,bruh):
-		global clock
-		print("time + "+str(clock))
-
-		
 		mouseX, mouseY = pygame.mouse.get_pos()
 		image = pygame.Surface([self.w, self.h])
-
-		
-
-
-
 		if self.x + self.w > mouseX > self.x and self.y + self.h > mouseY > self.y:
-			
-			#self.text = ''
+			self.clock += 2
 			self.colour = self.activeColour
 			pygame.draw.rect(screen, self.defaultColour, (self.x-10,self.y-10,self.w+20,self.h+20))
 			self.lst = []
@@ -97,14 +87,13 @@ class textbutton():
 					self.text2 += x
 
 		else:
-			#self.text2 = ''
-			clock = 0
-			#self.pointer = " "
+			self.clock = 0
 			self.colour = self.defaultColour
 
 			
 		pygame.draw.rect(screen, self.colour, (self.x,self.y,self.w,self.h))
 		buttonfont = pygame.font.Font(r"arial.ttf", 25)
+
 		if self.text2 is not '':
 			textSurf = buttonfont.render(self.text + self.text2 +self.pointer, 1, (255,255,255))
 		else:
@@ -114,25 +103,14 @@ class textbutton():
 		textRect.center = ((self.x+(self.w/2)), (self.y+(self.h/2)))
 		screen.blit(textSurf, textRect)
 
-		if clock == 1:
-			
+		if self.clock == 2:
 			self.pointer = "|"
 
-
-		if clock == 51:
-			clock = 0
-			
+		if self.clock == 50:
 			self.pointer = " "
 
-		#if clock == 51:
-			
-
-		clock += 1
-			
-			
-
-
-
+		if self.clock == 102:
+			self.clock = 0
 
 		return self.text2
 	
