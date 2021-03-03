@@ -148,7 +148,7 @@ def networkthread(clientid):
 
 	
 	while True:
-		clock.tick(FPS)
+		#clock.tick(FPS)
 		try:
 			data = sock.recv(4096)
 			

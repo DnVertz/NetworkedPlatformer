@@ -46,6 +46,7 @@ def sendPlayerInit(player, writer):
 	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	writer.write(data.encode('UTF-8'))
 
+
 def sendPlayerSpawn(player, writer):
 	data = "spawn;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	writer.write(data.encode('UTF-8'))
@@ -120,10 +121,13 @@ async def handler(reader, writer):
 				break
 
 			data = raw.decode()
-			packet = protocolDecode(playerID, data)
-			if isinstance(packet, PositionUpdate):
-				packet.updatePlayer()
-				await packet.forwardToClients() #broadcast
+			if not data.endswith("\n"):
+				pass
+			else:
+				packet = protocolDecode(playerID, data)
+				if isinstance(packet, PositionUpdate):
+					packet.updatePlayer()
+					await packet.forwardToClients() #broadcast
 	writer.close()
 	removePlayer(playerID)
 	await sendPlayerLeave(playerID)
