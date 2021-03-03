@@ -29,31 +29,36 @@ class actor:
 		img_surface = pygame.surfarray.make_surface(colored_img)
 		self.image = img_surface
 
-	def physicsHandler(self):
+	def physicsHandler(self,timedelta):
 		# gravity
-		g = 2
+		g = 1.38
+		#wall collision
+		if self.inBounds(self.x+self.vx*(timedelta/10), self.y) == False:
+			
+			self.x += self.vx*(timedelta/10)
+
+		
+		else:
+			self.vx = 0
+
 		#friction
 		if self.vx is not 0:
+			
 			self.vx *= 0.90
 
 		#gravity/falling/floor collisons
 		if self.inBounds(self.x, self.y+g+self.vy) == False:
 			self.vy += g
-			self.y += self.vy
+			self.y += self.vy 
 		else:
 			self.vy += g
-			self.vy *= 0.25
+			self.vy *= 0.25 *(timedelta/10)
 			if self.inBounds(self.x,self.y+g+self.vy) == True:
 				self.isjump = False
 				self.vy = 0
 
-			self.y += self.vy 
 
-		#wall collision
-		if self.inBounds(self.x+self.vx, self.y) == False:
-			self.x += self.vx
-		else:
-			self.vx = 0
+		
 
 	def inBounds(self, x, y):
 			for hitbox in self.hitboxes:
@@ -65,22 +70,9 @@ class actor:
 	def render(self, screen):
 
 		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
-		"""
-		
-		pygame.draw.rect(screen,(255,255,255),rects)"""
-		
-
-
-
-
-		
 		rotated = pygame.transform.rotate(self.image,0)
 		rotatedrect = rotated.get_rect(center=rects.center)
-
-		#screen.blit(rotated, rotatedrect)
-
-		screen.blit(rotated, rotatedrect)
-
+		screen.blit(self.image, rects)
 
 	def setPos(self, x, y):
 
@@ -106,12 +98,12 @@ class actor:
 
 	def moveLeft(self):
 		if self.inBounds(self.x , self.y) == False:
-			self.vx -= 1.5
+			self.vx -= 0.92
 
 
 	def moveRight(self):
 		if self.inBounds(self.x, self.y) == False:
-			self.vx += 1.5
+			self.vx += 0.92
 
 
 	def setAngle(self, Θ=0):

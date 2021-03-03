@@ -2,8 +2,13 @@ import threading, uuid, asyncio
 import socket
 
 
-HOST = '10.0.108.87'
 PORT = 8008
+#Jank cannot describe this solution
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 8008))
+HOST = str(s.getsockname()[0])
+s.close()
+#exit()
 
 
 players = []
@@ -134,6 +139,7 @@ async def handler(reader, writer):
 
 async def main():
     server = await asyncio.start_server( handler, HOST, PORT)
+
     #
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')

@@ -1,4 +1,5 @@
 import pygame
+clock =0 
 #used when rendering the complex buttons in menus
 class uistate:
 	def __init__(self):
@@ -44,21 +45,29 @@ class button():
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					return True
 class textbutton():
-	def __init__(self, text, x=0, y=0, w=0, h=0, activeColour=(153,0,0), defaultColour=(41,41,41)):
+	def __init__(self, text, x=0, y=0, w=0, h=0,activeColour=(153,0,0), defaultColour=(41,41,41)):
 		self.text = text
 		self.text2 = ''
 		self.x = x
 		self.y = y
 		self.w = w
 		self.h = h
+		self.pointer = "|"
 		self.lst = []
 		self.activeColour = activeColour
 		self.defaultColour = defaultColour
 		self.colour = defaultColour
 
-	def render(self, screen,events):
+
+	def render(self, screen,events,bruh):
+		global clock
+		print("time + "+str(clock))
+
+		
 		mouseX, mouseY = pygame.mouse.get_pos()
 		image = pygame.Surface([self.w, self.h])
+
+		
 
 
 
@@ -88,20 +97,44 @@ class textbutton():
 					self.text2 += x
 
 		else:
-			self.text2 = ''
+			#self.text2 = ''
+			clock = 0
+			#self.pointer = " "
 			self.colour = self.defaultColour
 
 			
 		pygame.draw.rect(screen, self.colour, (self.x,self.y,self.w,self.h))
 		buttonfont = pygame.font.Font(r"arial.ttf", 25)
 		if self.text2 is not '':
-			textSurf = buttonfont.render(self.text2, 1, (255,255,255))
+			textSurf = buttonfont.render(self.text + self.text2 +self.pointer, 1, (255,255,255))
 		else:
-			textSurf = buttonfont.render(self.text, 1, (255,255,255))
+			textSurf = buttonfont.render(self.text+self.pointer, 1, (255,255,255))
 
 		textRect = textSurf.get_rect()
 		textRect.center = ((self.x+(self.w/2)), (self.y+(self.h/2)))
 		screen.blit(textSurf, textRect)
+
+		if clock == 1:
+			
+			self.pointer = "|"
+
+
+		if clock == 51:
+			clock = 0
+			
+			self.pointer = " "
+
+		#if clock == 51:
+			
+
+		clock += 1
+			
+			
+
+
+
+
+		return self.text2
 	
 	def pressed(self,events):
 		mouseX, mouseY = pygame.mouse.get_pos()
