@@ -79,6 +79,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 def networkthread(clientid):
+	buff = ""
 	while True:
 		try:
 			data = sock.recv(4096)
@@ -86,7 +87,23 @@ def networkthread(clientid):
 			break
 
 		data = data.decode('UTF-8')
-		split = data.split("\n")
+
+
+
+		if buff != "":
+			print(buff)
+			data = data + buff
+			buff = ""
+
+		if not data.endswith("\n"):
+			split = data.split("\n")
+			buff = split[len(split-1)]
+		else:
+			split = data.split("\n")
+
+
+		
+		#split = data.split("\n")
 		for p in split:
 			split2 = p.split(";")
 

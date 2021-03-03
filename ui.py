@@ -88,6 +88,7 @@ class textbutton():
 
 		else:
 			self.clock = 0
+			self.pointer = " "
 			self.colour = self.defaultColour
 
 			

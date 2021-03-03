@@ -125,13 +125,14 @@ async def handler(reader, writer):
 				break
 
 			data = raw.decode()
-			if not data.endswith("\n"):
-				pass
-			else:
-				packet = protocolDecode(playerID, data)
-				if isinstance(packet, PositionUpdate):
-					packet.updatePlayer()
-					await packet.forwardToClients() #broadcast
+			"""if not data.endswith("\n"):
+				pass"""
+
+			#else:
+			packet = protocolDecode(playerID, data)
+			if isinstance(packet, PositionUpdate):
+				packet.updatePlayer()
+				await packet.forwardToClients() #broadcast
 	writer.close()
 	removePlayer(playerID)
 	await sendPlayerLeave(playerID)
