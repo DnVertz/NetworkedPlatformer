@@ -79,7 +79,6 @@ clock = pygame.time.Clock()
 FPS = 60
 
 def networkthread(clientid):
-	buff = ""
 	while True:
 		try:
 			data = sock.recv(4096)
@@ -87,19 +86,6 @@ def networkthread(clientid):
 			break
 
 		data = data.decode('UTF-8')
-
-
-
-		if buff != "":
-			print(buff)
-			data = data + buff
-			buff = ""
-
-		if not data.endswith("\n"):
-			split = data.split("\n")
-			buff = split[len(split-1)]
-		else:
-			split = data.split("\n")
 
 
 		
@@ -120,7 +106,8 @@ def networkthread(clientid):
 					if str(split2[1]) != str(clientid):
 						for x in multiplays:
 							if x.index == split2[1]:
-								x.setPos(int(split2[2]),int(split2[3]))
+								x.setVx(int(split2[2]))
+								x.setVy(int(split2[3]))
 
 			if split2[0] == "leave":
 				for x in multiplays:
@@ -152,13 +139,15 @@ while True:
 	inputs.run(state,player1)
 	player1.render(screen)
 
-	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+	data2 = "pos;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
 	data2 = data2.encode('UTF-8')
 	sock.send(data2)
 
 	for p in multiplays:
 		if p.index != clientid:
 			p.render(screen)
+			p.physicsHandler(fps)
+
 
 	pygame.display.flip()
 
