@@ -81,7 +81,11 @@ class actor:
 
 	def setVx(self,x):
 		if self.inBounds(self.x , self.y) == False:
-			self.vx -= x
+			self.vx = x
+
+	def setVy(self,y):
+		if self.inBounds(self.x , self.y) == False:
+			self.vy = y
 
 	def jump(self):
 		if self.inBounds(self.x, self.y) == False:

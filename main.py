@@ -19,6 +19,7 @@ quitol = False
 clientid = 1
 title = "Platformer"
 player1 = None
+predict = False
 
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 #corner(x,y),(width,height)
@@ -79,6 +80,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 def networkthread(clientid):
+	global predict
 	while True:
 		try:
 			data = sock.recv(4096)
@@ -86,28 +88,46 @@ def networkthread(clientid):
 			break
 
 		data = data.decode('UTF-8')
+		
+
+		if not data.endswith("\n"):
+			predict = True
+		else:
+			predict = False
+
+
 
 
 		
-		#split = data.split("\n")
+		split = data.split("\n")
 		for p in split:
 			split2 = p.split(";")
 
 			if split2[0] == "spawn":
+
 				if split2[1] is not clientid:
+					
 					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
 
 			if split2[0] == "join":
 				if split2[1] is not clientid:
 					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
 
-			if split2[0] == "pos":
+			if split2[0] == "velo":
 				if len(split2) == 4:
 					if str(split2[1]) != str(clientid):
 						for x in multiplays:
 							if x.index == split2[1]:
 								x.setVx(int(split2[2]))
 								x.setVy(int(split2[3]))
+
+			if split2[0] == "pos":
+				if len(split2) == 4:
+					if str(split2[1]) != str(clientid):
+						for x in multiplays:
+							if x.index == split2[1]:
+								x.setPos(int(split2[2]),int(split2[3]))
+								
 
 			if split2[0] == "leave":
 				for x in multiplays:
@@ -119,6 +139,7 @@ thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
 
 while True:
+
 
 	screen.fill((128,128,128))
 	if quitol == True:
@@ -138,15 +159,28 @@ while True:
 	player1.physicsHandler(fps)
 	inputs.run(state,player1)
 	player1.render(screen)
+	print(player1.vx)
+	print(player1.vy)
+	for p in multiplays:
 
-	data2 = "pos;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
+		if p.index != clientid:
+			p.render(screen)
+			if predict == True:
+				p.physicsHandler(fps)
+
+	data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
 	data2 = data2.encode('UTF-8')
 	sock.send(data2)
 
-	for p in multiplays:
-		if p.index != clientid:
-			p.render(screen)
-			p.physicsHandler(fps)
+	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+	data2 = data2.encode('UTF-8')
+	sock.send(data2)
+
+	
+
+	
+
+	
 
 
 	pygame.display.flip()

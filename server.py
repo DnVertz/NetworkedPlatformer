@@ -67,7 +67,7 @@ class Player:
 	def __init__(self, conn):
 		self.id = uuid.uuid1()
 		self.conn = conn
-		self.x = 20
+		self.x = 0
 		self.y = 0
 	def setPosition(self, x, y):
 		self.x = x
