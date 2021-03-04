@@ -90,18 +90,18 @@ def networkthread(clientid):
 		data = data.decode('UTF-8')
 		
 
-		if not data.endswith("\n"):
-			predict = True
-		else:
-			predict = False
+		
 
 
 
 
 		
 		split = data.split("\n")
+
 		for p in split:
 			split2 = p.split(";")
+
+				
 
 			if split2[0] == "spawn":
 
@@ -123,10 +123,15 @@ def networkthread(clientid):
 
 			if split2[0] == "pos":
 				if len(split2) == 4:
+					predict = False
 					if str(split2[1]) != str(clientid):
 						for x in multiplays:
 							if x.index == split2[1]:
 								x.setPos(int(split2[2]),int(split2[3]))
+				else:
+					predict = True
+
+
 								
 
 			if split2[0] == "leave":
@@ -164,9 +169,9 @@ while True:
 	for p in multiplays:
 
 		if p.index != clientid:
-			p.render(screen)
 			if predict == True:
-				p.physicsHandler(fps)
+				p.physicsHandler(1)
+			p.render(screen)
 
 	data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
 	data2 = data2.encode('UTF-8')

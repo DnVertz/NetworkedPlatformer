@@ -69,6 +69,8 @@ class Player:
 		self.conn = conn
 		self.x = 0
 		self.y = 0
+		self.vx = 0
+		self.vy = 0
 	def setPosition(self, x, y):
 		self.x = x
 		self.y = y
@@ -92,6 +94,23 @@ class PositionUpdate:
 		data = "pos;"+str(self.id)+";"+str(self.x)+";"+str(self.y)+"\n"
 		await broadcast(data.encode('UTF-8'))
 
+class VeloUpdate:
+	def __init__(self, pid, x: int, y: int):
+		self.id = pid
+		self.vx = x
+		self.vy = y
+	def updatePlayer(self):
+		#players_lock.acquire()
+		for i in range(len(players)):
+			if players[i].id == self.id:
+				players[i].vx = self.vx
+				players[i].vy = self.vy
+				break
+		#players_lock.release()
+	async def forwardToClients(self):
+		data = "velo;"+str(self.id)+";"+str(self.vx)+";"+str(self.vy)+"\n"
+		await broadcast(data.encode('UTF-8'))
+
 def protocolDecode(playerID, data):
 	split = data.split(";")
 	if split[0] == "pos":
@@ -99,6 +118,12 @@ def protocolDecode(playerID, data):
 		# position packet structure pos;x;y
 		posUpdate = PositionUpdate(playerID, int(split[1]), int(split[2]))
 		return posUpdate
+
+	if split[0] == "velo":
+		# decode position update packet
+		# position packet structure pos;x;y
+		veloUpdate = VeloUpdate(playerID, int(split[1]), int(split[2]))
+		return veloUpdate
 
 async def handler(reader, writer):
 	i = 0
@@ -133,6 +158,11 @@ async def handler(reader, writer):
 			if isinstance(packet, PositionUpdate):
 				packet.updatePlayer()
 				await packet.forwardToClients() #broadcast
+
+			if isinstance(packet, VeloUpdate):
+				packet.updatePlayer()
+				await packet.forwardToClients() #broadcast
+
 	writer.close()
 	removePlayer(playerID)
 	await sendPlayerLeave(playerID)
