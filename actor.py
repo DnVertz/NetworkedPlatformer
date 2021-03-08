@@ -2,9 +2,10 @@ import pygame
 import numpy
 import random
 class actor:
-	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0,index= 0):
+	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0,index= 0,predict = False):
 		self.hitboxes = hitboxes
 		self.isjump = False
+		self.predict = predict
 		self.x = x
 		self.y = y
 		self.vx = 0

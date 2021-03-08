@@ -115,21 +115,24 @@ def networkthread(clientid):
 
 			if split2[0] == "velo":
 				if len(split2) == 4:
-					if str(split2[1]) != str(clientid):
-						for x in multiplays:
-							if x.index == split2[1]:
-								x.setVx(int(split2[2]))
-								x.setVy(int(split2[3]))
+					for x in multiplays:
+						if x.index == split2[1]:
+							if x.predict == False:
+								if str(split2[1]) != str(clientid):
+									x.setVx(int(split2[2]))
+									x.setVy(int(split2[3]))
 
 			if split2[0] == "pos":
 				if len(split2) == 4:
-					predict = False
-					if str(split2[1]) != str(clientid):
-						for x in multiplays:
-							if x.index == split2[1]:
-								x.setPos(int(split2[2]),int(split2[3]))
-				else:
-					predict = True
+					for x in multiplays:
+						if x.index == split2[1]:
+							if str(split2[1]) != str(clientid):
+								x.predict = False
+								for x in multiplays:
+									if x.index == split2[1]:
+										x.setPos(int(split2[2]),int(split2[3]))
+							else:
+								x.predict = True
 
 
 								
@@ -164,13 +167,14 @@ while True:
 	player1.physicsHandler(fps)
 	inputs.run(state,player1)
 	player1.render(screen)
-	print(player1.vx)
-	print(player1.vy)
 	for p in multiplays:
 
 		if p.index != clientid:
-			if predict == True:
-				p.physicsHandler(1)
+			if p.predict == True:
+				print("predict on")
+				p.physicsHandler(fps)
+			else:
+				print("predict off")
 			p.render(screen)
 
 	data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
