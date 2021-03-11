@@ -20,6 +20,8 @@ clientid = 1
 title = "Platformer"
 player1 = None
 predict = False
+#try updating position when new input is pressed
+
 
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 #corner(x,y),(width,height)
@@ -81,7 +83,9 @@ FPS = 60
 
 def networkthread(clientid):
 	global predict
+	count = 0
 	while True:
+		count += 1
 		try:
 			data = sock.recv(4096)
 		except:
@@ -97,9 +101,23 @@ def networkthread(clientid):
 
 		
 		split = data.split("\n")
+		"""
+
+		for z in multiplays:
+
+				if z.index != clientid:
+					if z.predict == True:
+						fps = clock.tick(FPS)
+						print("???")
+						#z.physicsHandler(fps)"""
 
 		for p in split:
 			split2 = p.split(";")
+			if len(split2) >1:
+
+				if split2[1]!= clientid:
+					count = 0
+
 
 				
 
@@ -113,14 +131,7 @@ def networkthread(clientid):
 				if split2[1] is not clientid:
 					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
 
-			if split2[0] == "velo":
-				if len(split2) == 4:
-					for x in multiplays:
-						if x.index == split2[1]:
-							if x.predict == False:
-								if str(split2[1]) != str(clientid):
-									x.setVx(int(split2[2]))
-									x.setVy(int(split2[3]))
+
 
 			if split2[0] == "pos":
 				if len(split2) == 4:
@@ -128,11 +139,19 @@ def networkthread(clientid):
 						if x.index == split2[1]:
 							if str(split2[1]) != str(clientid):
 								x.predict = False
-								for x in multiplays:
-									if x.index == split2[1]:
-										x.setPos(int(split2[2]),int(split2[3]))
-							else:
-								x.predict = True
+								x.setPos(int(split2[2]),int(split2[3]))
+								count = 0
+
+			if split2[0] == "velo":
+				if len(split2) == 4:
+					for x in multiplays:
+						if x.index == split2[1]:
+							if x.predict == False:
+							
+								if str(split2[1]) != str(clientid):
+									x.setVx(int(split2[2]))
+									x.setVy(int(split2[3]))
+					
 
 
 								
@@ -141,6 +160,19 @@ def networkthread(clientid):
 				for x in multiplays:
 					if x.index == split2[1]:
 						multiplays.remove(x)
+
+			if count == 10:
+				for x in multiplays:
+					#do a try thing
+					if len(split2) > 1:
+						#if x.index == split2[1] :
+						if x.index != clientid:
+							x.predict = True
+							#print(x.predict)
+							#print("predict actives")
+
+			
+
 	os._exit(1)
 
 thr = Thread(target = networkthread,args =(str(clientid),))
@@ -163,18 +195,15 @@ while True:
 		if coll.index(x) >= 4:
 			pygame.draw.rect(screen,(60,60,60),(x[0][0],x[0][1],x[1][0],x[1][1]))
 
-	fps = clock.tick(FPS)
-	player1.physicsHandler(fps)
-	inputs.run(state,player1)
-	player1.render(screen)
+	
 	for p in multiplays:
 
 		if p.index != clientid:
 			if p.predict == True:
-				print("predict on")
-				p.physicsHandler(fps)
-			else:
-				print("predict off")
+				print("???")
+				#p.physicsHandler(1)
+
+			
 			p.render(screen)
 
 	data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
@@ -185,6 +214,15 @@ while True:
 	data2 = data2.encode('UTF-8')
 	sock.send(data2)
 
+
+	fps = clock.tick(FPS)
+
+	player1.physicsHandler(fps)
+	inputs.run(state,player1)
+	player1.render(screen)
+	
+
+	
 	
 
 	
