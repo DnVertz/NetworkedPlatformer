@@ -101,6 +101,7 @@ def networkthread(clientid):
 
 		
 		split = data.split("\n")
+
 		"""
 
 		for z in multiplays:
@@ -111,65 +112,61 @@ def networkthread(clientid):
 						print("???")
 						#z.physicsHandler(fps)"""
 
+
 		for p in split:
 			split2 = p.split(";")
-			if len(split2) >1:
 
-				if split2[1]!= clientid:
-					count = 0
+			if len(split2) == 4 :
 
+				if split2[0] == "spawn":
 
-				
+					if split2[1] is not clientid:
+						
+						multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
 
-			if split2[0] == "spawn":
-
-				if split2[1] is not clientid:
-					
-					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
-
-			if split2[0] == "join":
-				if split2[1] is not clientid:
-					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
+				if split2[0] == "join":
+					if split2[1] is not clientid:
+						multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1]))
 
 
 
-			if split2[0] == "pos":
-				if len(split2) == 4:
-					for x in multiplays:
-						if x.index == split2[1]:
-							if str(split2[1]) != str(clientid):
-								x.predict = False
-								x.setPos(int(split2[2]),int(split2[3]))
-								count = 0
-
-			if split2[0] == "velo":
-				if len(split2) == 4:
-					for x in multiplays:
-						if x.index == split2[1]:
-							if x.predict == False:
-							
+				if split2[0] == "pos":
+					if len(split2) == 4:
+						for x in multiplays:
+							if x.index == split2[1]:
 								if str(split2[1]) != str(clientid):
-									x.setVx(int(split2[2]))
-									x.setVy(int(split2[3]))
-					
+									x.predict = False
+									x.setPos(int(split2[2]),int(split2[3]))
+									count = 0
 
-
+				if split2[0] == "velo":
+					if len(split2) == 4:
+						for x in multiplays:
+							if x.index == split2[1]:
+								if x.predict == False:
 								
+									if str(split2[1]) != str(clientid):
+										x.setVx(int(split2[2]))
+										x.setVy(int(split2[3]))
+						
 
-			if split2[0] == "leave":
-				for x in multiplays:
-					if x.index == split2[1]:
-						multiplays.remove(x)
 
-			if count == 10:
-				for x in multiplays:
-					#do a try thing
-					if len(split2) > 1:
-						#if x.index == split2[1] :
-						if x.index != clientid:
-							x.predict = True
-							#print(x.predict)
-							#print("predict actives")
+									
+
+				if split2[0] == "leave":
+					for x in multiplays:
+						if x.index == split2[1]:
+							multiplays.remove(x)
+
+				if count == 10:
+					for x in multiplays:
+						#do a try thing
+						if len(split2) > 1:
+							#if x.index == split2[1] :
+							if x.index != clientid:
+								x.predict = True
+								#print(x.predict)
+								#print("predict actives")
 
 			
 
@@ -206,19 +203,21 @@ while True:
 			
 			p.render(screen)
 
-	data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
-	data2 = data2.encode('UTF-8')
-	sock.send(data2)
+	#data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
+	#data2 = data2.encode('UTF-8')
+	#sock.send(data2)
 
 	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
 	data2 = data2.encode('UTF-8')
 	sock.send(data2)
-
-
 	fps = clock.tick(FPS)
 
-	player1.physicsHandler(fps)
+
+	
+
+	
 	inputs.run(state,player1)
+	player1.physicsHandler(fps)
 	player1.render(screen)
 	
 
