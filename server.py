@@ -5,6 +5,7 @@ import socket
 PORT = 8008
 #Jank cannot describe this solution
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
 s.connect(("8.8.8.8", 8008))
 HOST = str(s.getsockname()[0])
 s.close()
@@ -46,12 +47,12 @@ def removePlayer(playerID):
 		if player.id == playerID:
 			players.remove(player)
 
-def sendPlayerInit(player, writer):
+async def sendPlayerInit(player, writer):
 	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	writer.write(data.encode('UTF-8'))
 
 
-def sendPlayerSpawn(player, writer):
+async def sendPlayerSpawn(player, writer):
 	data = "spawn;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	writer.write(data.encode('UTF-8'))
 
@@ -82,7 +83,7 @@ class PositionUpdate:
 		self.id = pid
 		self.x = x
 		self.y = y
-	def updatePlayer(self):
+	async def updatePlayer(self):
 		#players_lock.acquire()
 		for i in range(len(players)):
 			if players[i].id == self.id:
@@ -99,7 +100,7 @@ class VeloUpdate:
 		self.id = pid
 		self.vx = x
 		self.vy = y
-	def updatePlayer(self):
+	async def updatePlayer(self):
 		#players_lock.acquire()
 		for i in range(len(players)):
 			if players[i].id == self.id:
@@ -111,7 +112,7 @@ class VeloUpdate:
 		data = "velo;"+str(self.id)+";"+str(self.vx)+";"+str(self.vy)+"\n"
 		await broadcast(data.encode('UTF-8'))
 
-def protocolDecode(playerID, data):
+async def protocolDecode(playerID, data):
 	split = data.split(";")
 	if split[0] == "pos":
 		# decode position update packet
@@ -133,9 +134,9 @@ async def handler(reader, writer):
 	player = Player(writer)
 	playerID = player.id
 	players.append(player)
-	sendPlayerInit(player, writer) #send init id and pos to player
+	await sendPlayerInit(player, writer) #send init id and pos to player
 	for p in players:
-		sendPlayerSpawn(p,writer)
+		await sendPlayerSpawn(p,writer)
 
 	await sendPlayerJoin(player) #broadcast init id and pos to all players
 	while True:
@@ -154,13 +155,13 @@ async def handler(reader, writer):
 				pass"""
 
 			#else:
-			packet = protocolDecode(playerID, data)
+			packet = await protocolDecode(playerID, data)
 			if isinstance(packet, PositionUpdate):
-				packet.updatePlayer()
+				await packet.updatePlayer()
 				await packet.forwardToClients() #broadcast
 
 			if isinstance(packet, VeloUpdate):
-				packet.updatePlayer()
+				await packet.updatePlayer()
 				await packet.forwardToClients() #broadcast
 
 	writer.close()
