@@ -165,7 +165,7 @@ while True:
 
 	fps = clock.tick(FPS)
 	player1.physicsHandler(fps)
-	inputs.run(state,player1)
+	x = inputs.run(state,player1)
 	player1.render(screen)
 	for p in multiplays:
 
@@ -177,13 +177,15 @@ while True:
 				print("predict off")
 			p.render(screen)
 
-	data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
-	data2 = data2.encode('UTF-8')
-	sock.send(data2)
+	if x == True:
 
-	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
-	data2 = data2.encode('UTF-8')
-	sock.send(data2)
+		data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
+		data2 = data2.encode('UTF-8')
+		sock.send(data2)
+
+		data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+		data2 = data2.encode('UTF-8')
+		sock.send(data2)
 
 	
 

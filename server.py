@@ -33,12 +33,12 @@ players_lock = threading.Lock()
 
 """
 
-async def broadcast(data):
+def broadcast(data):
 	for player in players:
 
 		try:
-			await player.conn.write(data)
-			await player.conn.drain()
+			player.conn.write(data)
+			#player.conn.drain()
 		except:
 			pass
 
@@ -58,11 +58,11 @@ async def sendPlayerSpawn(player, writer):
 
 async def sendPlayerJoin(player):
 	data = "join;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
-	await broadcast(data.encode('UTF-8'))
+	broadcast(data.encode('UTF-8'))
 
 async def sendPlayerLeave(playerID):
 	data = "leave;"+str(playerID)+"\n"
-	await broadcast(data.encode('UTF-8'))
+	broadcast(data.encode('UTF-8'))
 
 class Player:
 	def __init__(self, conn):
@@ -83,7 +83,7 @@ class PositionUpdate:
 		self.id = pid
 		self.x = x
 		self.y = y
-	async def updatePlayer(self):
+	def updatePlayer(self):
 		#players_lock.acquire()
 		for i in range(len(players)):
 			if players[i].id == self.id:
@@ -91,9 +91,9 @@ class PositionUpdate:
 				players[i].y = self.y
 				break
 		#players_lock.release()
-	async def forwardToClients(self):
+	def forwardToClients(self):
 		data = "pos;"+str(self.id)+";"+str(self.x)+";"+str(self.y)+"\n"
-		await broadcast(data.encode('UTF-8'))
+		broadcast(data.encode('UTF-8'))
 
 class VeloUpdate:
 	def __init__(self, pid, x: int, y: int):
@@ -157,12 +157,13 @@ async def handler(reader, writer):
 			#else:
 			packet = await protocolDecode(playerID, data)
 			if isinstance(packet, PositionUpdate):
-				await packet.updatePlayer()
-				await packet.forwardToClients() #broadcast
+				packet.updatePlayer()
+				packet.forwardToClients() #broadcast
 
 			if isinstance(packet, VeloUpdate):
-				await packet.updatePlayer()
-				await packet.forwardToClients() #broadcast
+				pass
+				#await packet.updatePlayer()
+				#await packet.forwardToClients() #broadcast
 
 	writer.close()
 	removePlayer(playerID)
