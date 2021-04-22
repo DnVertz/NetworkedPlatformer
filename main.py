@@ -78,6 +78,7 @@ for p in split:
 
 clock = pygame.time.Clock() 
 FPS = 60
+fps = clock.tick(FPS)
 
 def networkthread(clientid):
 	global predict
@@ -163,8 +164,13 @@ while True:
 		if coll.index(x) >= 4:
 			pygame.draw.rect(screen,(60,60,60),(x[0][0],x[0][1],x[1][0],x[1][1]))
 
-	fps = clock.tick(FPS)
+	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+	data2 = data2.encode('UTF-8')
+	sock.send(data2)
+
+	
 	player1.physicsHandler(fps)
+
 	x = inputs.run(state,player1)
 	player1.render(screen)
 	for p in multiplays:
@@ -177,15 +183,13 @@ while True:
 				print("predict off")
 			p.render(screen)
 
-	if x == True:
 
-		data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
-		data2 = data2.encode('UTF-8')
-		sock.send(data2)
 
-		data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
-		data2 = data2.encode('UTF-8')
-		sock.send(data2)
+	"""data2 = "velo;"+str(int(player1.vx))+";"+str(int(player1.vy))+"\n"
+	data2 = data2.encode('UTF-8')
+	sock.send(data2)"""
+
+	
 
 	
 
