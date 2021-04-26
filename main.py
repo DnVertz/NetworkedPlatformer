@@ -66,7 +66,7 @@ while True:
 
 	pygame.display.flip()
 
-sock.settimeout(1.0)
+#sock.settimeout(1.0)
 
 
 
