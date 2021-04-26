@@ -53,10 +53,12 @@ while True:
 			state.state = "joincheck"
 	else:
 		try: 
-			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY,4096)
+			sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
 			server_address = (str(connec[0]), int(connec[1]))
-			sock.connect(server_address)
+			print(server_address)
+			msgs = str("join;")
+			byte = msgs.encode()
+			sock.sendto(byte,server_address)
 			break
 		except:
 			title = "Wrong IP/Port!!!!"
@@ -64,8 +66,12 @@ while True:
 
 	pygame.display.flip()
 
+sock.settimeout(1.0)
 
-initdata = sock.recv(4096)
+
+
+initdata,addr = sock.recvfrom(4096)
+print(initdata)
 initdata = initdata.decode('UTF-8')
 split = initdata.split("\n")
 for p in split:
@@ -84,7 +90,8 @@ def networkthread(clientid):
 	global predict
 	while True:
 		try:
-			data = sock.recv(4096)
+			data,bruh = sock.recvfrom(4096)
+			
 		except:
 			break
 
@@ -124,16 +131,9 @@ def networkthread(clientid):
 									x.setVy(int(split2[3]))
 
 			if split2[0] == "pos":
-				if len(split2) == 4:
 					for x in multiplays:
 						if x.index == split2[1]:
-							if str(split2[1]) != str(clientid):
-								x.predict = False
-								for x in multiplays:
-									if x.index == split2[1]:
-										x.setPos(int(split2[2]),int(split2[3]))
-							else:
-								x.predict = True
+							x.setPos(int(split2[2]),int(split2[3]))
 
 
 								
@@ -148,6 +148,9 @@ thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
 
 while True:
+	data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+	data2 = data2.encode('UTF-8')
+	sock.sendto(data2,server_address)
 
 
 	screen.fill((128,128,128))
@@ -164,9 +167,7 @@ while True:
 		if coll.index(x) >= 4:
 			pygame.draw.rect(screen,(60,60,60),(x[0][0],x[0][1],x[1][0],x[1][1]))
 
-	data2 = "pos;"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
-	data2 = data2.encode('UTF-8')
-	sock.send(data2)
+	
 
 	
 	player1.physicsHandler(fps)

@@ -176,7 +176,7 @@ async def main():
     addr = server.sockets[0].getsockname()
     print(f'Serving on {addr}')
 
-    async with server:
+    server:
         await server.serve_forever()
 
 asyncio.run(main())
