@@ -86,7 +86,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 	def handle(self):
 		data = self.request[0].strip()
 		socket = self.request[1]
-		socket.settimeout(1.0)
+		#socket.settimeout(1.0)
 		data = data.decode()
 		split = data.split(";")
 
