@@ -119,6 +119,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 						if str(p.id) != str(players[i].id):
 							sendPlayerLeave(players[i],p.addr)
 						players.remove(players[i])
+						break
 							
 
 async def main():
