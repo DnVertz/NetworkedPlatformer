@@ -38,9 +38,9 @@ def sendPlayerJoin(player):
 	data = "join;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	broadcast(data.encode('UTF-8'))
 
-def sendPlayerLeave(playerID):
-	data = "leave;"+str(playerID)+"\n"
-	broadcast(data.encode('UTF-8'))
+def sendPlayerLeave(player,addr):
+	data = "leave;"+str(player.id)+"\n"
+	player.socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerPos(player,addr):
 	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
@@ -115,8 +115,10 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 		elif split[0] == 'leave':
 			for i in range(len(players)):
 				if str(players[i].id) == split[1]:
-					sendPlayerLeave(players[i].id)
-					players.remove(players[i])
+					for p in players:
+						if str(p.id) != str(players[i].id):
+							sendPlayerLeave(players[i],p.addr)
+						players.remove(players[i])
 							
 
 async def main():

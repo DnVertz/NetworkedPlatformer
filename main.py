@@ -119,12 +119,14 @@ thr.start()
 
 while True:
 
-	data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
-	data2 = data2.encode('UTF-8')
-	sock.sendto(data2,server_address)
+	
+
 	screen.fill((128,128,128))
 
 	if quitol == True:
+		data2 = "leave;"+str(clientid)+"\n"
+		data2 = data2.encode('UTF-8')
+		sock.sendto(data2,server_address)
 		break
 	events = pygame.event.get()
 	for event in events:
@@ -134,18 +136,20 @@ while True:
 		if coll.index(x) >= 4:
 			pygame.draw.rect(screen,(60,60,60),(x[0][0],x[0][1],x[1][0],x[1][1]))
 
-	player1.physicsHandler(fps)
-	x = inputs.run(state,player1)
-	player1.render(screen)
+	if player1 is not None:
+		player1.physicsHandler(fps)
+		data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+"\n"
+		data2 = data2.encode('UTF-8')
+		sock.sendto(data2,server_address)
+		x = inputs.run(state,player1)
+		player1.render(screen)
 
-	for p in multiplays:
-		if p.index != clientid:
-			p.render(screen)
-	pygame.display.flip()
+		for p in multiplays:
+			if p.index != clientid:
+				p.render(screen)
+		pygame.display.flip()
 
 
-data2 = "leave;"+str(clientid)+"\n"
-data2 = data2.encode('UTF-8')
-sock.sendto(data2,server_address)
+
 
 sock.close()
