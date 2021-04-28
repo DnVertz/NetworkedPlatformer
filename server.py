@@ -1,4 +1,9 @@
-import threading, uuid, asyncio
+from threading import Thread
+from threading import Lock
+import time
+
+
+import uuid, asyncio
 import socket
 import socketserver
 #Jank cannot describe this solution
@@ -10,7 +15,12 @@ s.close()
 PORT = 8008
 HOST = ''
 players = []
-players_lock = threading.Lock()
+#players_lock = threading.Lock()
+s_print_lock = Lock()
+def s_print(*a, **b):
+    """Thread safe print function"""
+    with s_print_lock:
+        print(*a, **b)
 
 
 def broadcast(data):
@@ -46,7 +56,34 @@ def sendPlayerPos(player,addr):
 	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
 
+def sendPlayerTest(socket,addr):
+	data = "test;"+"\n"
+	socket.sendto(data.encode('UTF-8'),addr)
 
+def timeout():
+	while True:
+		global players
+		for i in range(len(players)):
+			print(players[i].timeout)
+			if players[i].timeout == 10: 
+				for p in players:
+					sendPlayerLeave(players[i],p.addr,p.socket)
+				players.remove(players[i])
+				break
+			else:
+				try:
+					pos = (players[i].x,players[i].y)
+					time.sleep(1)
+					pos2 = (players[i].x,players[i].y)
+					if pos == pos2:
+						players[i].timeout += 1
+				except:
+					pass
+
+
+
+thr = Thread(target = timeout,args =())
+thr.start()
 
 class PositionUpdate:
 	def __init__(self, pid, x: int, y: int):
@@ -74,6 +111,7 @@ class Player:
 		self.y = 0
 		self.vx = 0
 		self.vy = 0
+		self.timeout = 0
 	def setPosition(self, x, y):
 		self.x = x
 		self.y = y
@@ -84,11 +122,15 @@ class Player:
 
 class MyUDPHandler(socketserver.DatagramRequestHandler):
 	def handle(self):
+		#print("a")
 		data = self.request[0].strip()
 		socket = self.request[1]
-		#socket.settimeout(1.0)
+		#socket.settimeout(10)
 		data = data.decode()
+		#print(self.request)
 		split = data.split(";")
+
+
 
 		if split[0] == 'join':
 			player = Player(socket,self.client_address)
@@ -96,7 +138,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 			players.append(player)
 			sendPlayerInit(player, self.client_address,socket) #send init id and pos to player
 			for p in players:
-				print(p.id)
+				#print(p.id)
 				if p is not player:
 					sendPlayerSpawn(p,player.addr)
 					sendPlayerSpawn(player,p.addr)
@@ -118,11 +160,13 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 					for p in players:
 						if str(p.id) != str(players[i].id):
 							sendPlayerLeave(players[i],p.addr,socket)
-					
 					players.remove(players[i])
 						
 					break
-							
+		
+
+
+
 
 async def main():
     server = socketserver.UDPServer((HOST,8008), MyUDPHandler)

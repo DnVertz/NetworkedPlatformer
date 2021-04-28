@@ -9,6 +9,8 @@ import actor
 import random
 import socket
 import os
+import signal
+import sys
 
 HOST = None
 PORT = None
@@ -109,17 +111,28 @@ def networkthread(clientid):
 							x.setPos(int(split2[2]),int(split2[3]))
 
 			if split2[0] == "leave":
-				for x in multiplays:
-					if x.index == split2[1]:
-						multiplays.remove(x)
+				if split2[1] == clientid:
+					os._exit(1)
+				else:
+					for x in multiplays:
+						if x.index == split2[1]:
+							multiplays.remove(x)
+
 	os._exit(1)
 
 thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
 
+def signal_handler(sig, frame):
+	print('You pressed Ctrl+C!')
+	data2 = "leave;"+str(clientid)+"\n"
+	data2 = data2.encode('UTF-8')
+	sock.sendto(data2,server_address)
+	os._exit(1)
+
 while True:
 
-	
+	signal.signal(signal.SIGINT, signal_handler)
 
 	screen.fill((128,128,128))
 
