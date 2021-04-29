@@ -75,7 +75,6 @@ class actor:
 		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
 		rotated = pygame.transform.rotate(self.image,0)
 		rotatedrect = rotated.get_rect(center=rects.center)
-		print(self.name)
 		textSurf = buttonfont.render(self.name, 1, (255,255,255))
 		textRect = textSurf.get_rect()
 		textRect.center = ((self.x+10, self.y-20))

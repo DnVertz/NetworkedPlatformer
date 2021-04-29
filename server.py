@@ -82,6 +82,9 @@ def timeout():
 					pos2 = (players[i].x,players[i].y)
 					if pos == pos2:
 						players[i].timeout += 1
+					else:
+						players[i].timeout = 0
+
 				
 		except:
 			pass
@@ -186,6 +189,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 					break
 		elif split[0] == 'msg':
 			for p in players:
+				p.timeout = 0
 				sendPlayerMsg(socket,split[1],p.addr,split[2])
 
 		

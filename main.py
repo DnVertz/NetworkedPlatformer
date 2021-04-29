@@ -61,13 +61,13 @@ while True:
 			sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
 			server_address = (str(connec[0]), int(connec[1]))
 			name = str(connec[2])
-			print(server_address)
+			
 			msgs = str("join;"+name+"\n")
 			byte = msgs.encode()
 			sock.sendto(byte,server_address)
 			initdata2,addr = sock.recvfrom(4096)
 			initdata2 = initdata2.decode('UTF-8')
-			print(initdata2)
+
 			if initdata2 == "True":
 				break
 			else:
@@ -81,7 +81,7 @@ while True:
 	pygame.display.flip()
 
 initdata,addr = sock.recvfrom(4096)
-print(initdata)
+
 initdata = initdata.decode('UTF-8')
 split = initdata.split("\n")
 for p in split:
@@ -100,6 +100,7 @@ fps = clock.tick(FPS)
 def networkthread(clientid):
 	global predict
 	global messages
+	global msgtimeout
 	while True:
 		try:
 			data,addr2 = sock.recvfrom(4096)
@@ -135,8 +136,10 @@ def networkthread(clientid):
 						multiplays.remove(x)
 
 			if split2[0] == "msg":
-				print(split2[1])
+
+
 				messages.append(split2[1]+": "+split2[2])
+				msgtimeout = 0
 
 	os._exit(1)
 
@@ -178,18 +181,24 @@ while True:
 		if len(messages) > 0:
 			msgtimeout += 1
 
-		if len(messages) == 5 or (msgtimeout > 350 and len(messages)>0):
+		if len(messages) == 5 or (msgtimeout > 300 and len(messages)>0):
 			msgtimeout = 0
 			messages.remove(messages[0])
 
 		for i in range(len(messages)):
 			amount = messagefont.size(messages[i])
-			print(amount)
 			textSurf = messagefont.render(messages[i], 1, (255,255,255))
 			textRect = pygame.Rect(0+5,i*40, amount[0], amount[1])
 			#textRect.center = (((100/2)), (60+(60/2)+i*40))
 			#textRect.center = (0+amount[0],0+amount[1]+i*40)
 			screen.blit(textSurf, textRect)
+
+
+		player1.render(screen)
+
+		for p in multiplays:
+			if p.index != clientid:
+				p.render(screen)
 				
 
 
@@ -213,11 +222,6 @@ while True:
 		
 
 
-		player1.render(screen)
-
-		for p in multiplays:
-			if p.index != clientid:
-				p.render(screen)
 		pygame.display.flip()
 
 
