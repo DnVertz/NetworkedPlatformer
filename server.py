@@ -36,12 +36,12 @@ def removePlayer(playerID):
 			players.remove(player)
 
 def sendPlayerInit(player, addr,socket):
-	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
-	player.socket.sendto(data.encode('UTF-8'),player.addr)
+	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(player.name)+"\n"
+	socket.sendto(data.encode('UTF-8'),addr)
 
 
 def sendPlayerSpawn(player,addr):
-	data = "spawn;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
+	data = "spawn;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(player.name)+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerJoin(player):
@@ -56,6 +56,10 @@ def sendPlayerPos(player,addr):
 	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
 
+def sendPlayerMsg(socket,message,addr,name):
+	data = "msg;"+str(name)+";"+str(message)+"\n"
+	socket.sendto(data.encode('UTF-8'),addr)
+
 def sendPlayerTest(socket,addr):
 	data = "test;"+"\n"
 	socket.sendto(data.encode('UTF-8'),addr)
@@ -63,22 +67,24 @@ def sendPlayerTest(socket,addr):
 def timeout():
 	while True:
 		global players
-		for i in range(len(players)):
-			print(players[i].timeout)
-			if players[i].timeout == 10: 
-				for p in players:
-					sendPlayerLeave(players[i],p.addr,p.socket)
-				players.remove(players[i])
-				break
-			else:
-				try:
+		try:
+			for i in range(len(players)):
+				print(players[i].timeout)
+				if players[i].timeout == 60: 
+					for p in players:
+						sendPlayerLeave(players[i],p.addr,p.socket)
+					players.remove(players[i])
+					break
+				else:
+					
 					pos = (players[i].x,players[i].y)
 					time.sleep(1)
 					pos2 = (players[i].x,players[i].y)
 					if pos == pos2:
 						players[i].timeout += 1
-				except:
-					pass
+				
+		except:
+			pass
 
 
 
@@ -103,10 +109,11 @@ class PositionUpdate:
 
 
 class Player:
-	def __init__(self, socket,addr):
+	def __init__(self, socket,addr,name):
 		self.id = uuid.uuid1()
 		self.socket = socket
 		self.addr = addr
+		self.name = name
 		self.x = 0
 		self.y = 0
 		self.vx = 0
@@ -133,10 +140,12 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 
 
 		if split[0] == 'join':
-			player = Player(socket,self.client_address)
+			player = Player(socket,self.client_address,split[1])
 			playerID = player.id
 			players.append(player)
 			sendPlayerInit(player, self.client_address,socket) #send init id and pos to player
+			sendPlayerInit(player, self.client_address,socket)
+			sendPlayerInit(player, self.client_address,socket)
 			for p in players:
 				#print(p.id)
 				if p is not player:
@@ -163,6 +172,10 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 					players.remove(players[i])
 						
 					break
+		elif split[0] == 'msg':
+			for p in players:
+				sendPlayerMsg(socket,split[1],p.addr,split[2])
+
 		
 
 
