@@ -83,7 +83,7 @@ class textbutton():
 								del self.lst[len(self.lst)-1]
 
 
-						elif pygame.key.name(event.key).isnumeric() == True or pygame.key.name(event.key) == "." or (self.number == False and len(pygame.key.name(event.key)) == 1):
+						elif pygame.key.name(event.key).isnumeric() == True or pygame.key.name(event.key) == "." or (len(pygame.key.name(event.key)) == 1):
 							self.lst.append(pygame.key.name(event.key))
 						
 
@@ -163,7 +163,7 @@ class textbutton2():
 
 			for event in events:
 				if event.type == pygame.KEYDOWN:
-					if pygame.key.name(event.key) != 'backspace' and pygame.key.name(event.key) != 'space' and pygame.key.name(event.key) != 'return' and pygame.key.name(event.key) and len(self.text2) < 30:
+					if pygame.key.name(event.key) != 'backspace' and pygame.key.name(event.key) != 'space' and pygame.key.name(event.key) != 'return' and pygame.key.name(event.key) and len(self.text2) < 30 and len(pygame.key.name(event.key)) == 1:
 						self.lst.append(pygame.key.name(event.key))
 
 					elif pygame.key.name(event.key) == "space":

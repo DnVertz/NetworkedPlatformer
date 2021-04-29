@@ -37,7 +37,7 @@ def removePlayer(playerID):
 
 def sendPlayerInit(player, addr,socket):
 	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(player.name)+"\n"
-	socket.sendto(data.encode('UTF-8'),addr)
+	socket.sendto(data.encode('UTF-8'),player.addr)
 
 
 def sendPlayerSpawn(player,addr):
@@ -140,19 +140,31 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 
 
 		if split[0] == 'join':
-			player = Player(socket,self.client_address,split[1])
-			playerID = player.id
-			players.append(player)
-			sendPlayerInit(player, self.client_address,socket) #send init id and pos to player
-			sendPlayerInit(player, self.client_address,socket)
-			sendPlayerInit(player, self.client_address,socket)
-			for p in players:
-				#print(p.id)
-				if p is not player:
-					sendPlayerSpawn(p,player.addr)
-					sendPlayerSpawn(player,p.addr)
-				else:		
-					sendPlayerSpawn(player,p.addr)
+			allow = True
+			for x in players:
+				print(x.name)
+				if x.name == split[1]:
+					msg = "False"
+					msg = msg.encode()
+					allow = False
+					socket.sendto(msg,self.client_address)
+
+			if allow == True:
+				msg = "True"
+				msg = msg.encode()
+				socket.sendto(msg,self.client_address)
+
+				player = Player(socket,self.client_address,split[1])
+				playerID = player.id
+				players.append(player)
+				sendPlayerInit(player, self.client_address,socket) #send init id and pos to player
+				for p in players:
+					#print(p.id)
+					if p is not player:
+						sendPlayerSpawn(p,player.addr)
+						sendPlayerSpawn(player,p.addr)
+					else:		
+						sendPlayerSpawn(player,p.addr)
 		
 		elif split[0] == 'pos':
 			for i in range(len(players)):

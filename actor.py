@@ -78,7 +78,7 @@ class actor:
 		print(self.name)
 		textSurf = buttonfont.render(self.name, 1, (255,255,255))
 		textRect = textSurf.get_rect()
-		textRect.center = ((self.x, self.y-20))
+		textRect.center = ((self.x+10, self.y-20))
 		screen.blit(textSurf, textRect)
 		
 		screen.blit(self.image, rects)

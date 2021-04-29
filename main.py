@@ -40,6 +40,7 @@ for x in coll:
 state.state = "start"
 pygame.init()
 titlefont = pygame.font.Font(r'arial.ttf', 40)
+messagefont = pygame.font.Font(r'arial.ttf', 20)
 
 while True:
 	if quitol == True:
@@ -64,7 +65,15 @@ while True:
 			msgs = str("join;"+name+"\n")
 			byte = msgs.encode()
 			sock.sendto(byte,server_address)
-			break
+			initdata2,addr = sock.recvfrom(4096)
+			initdata2 = initdata2.decode('UTF-8')
+			print(initdata2)
+			if initdata2 == "True":
+				break
+			else:
+				title = "Name in use"
+				state.state = "start"
+
 		except:
 			title = "Wrong IP/Port!!!!"
 			state.state = "start"
@@ -169,14 +178,17 @@ while True:
 		if len(messages) > 0:
 			msgtimeout += 1
 
-		if len(messages) == 5 or (msgtimeout > 250 and len(messages)>0):
+		if len(messages) == 5 or (msgtimeout > 350 and len(messages)>0):
 			msgtimeout = 0
 			messages.remove(messages[0])
 
 		for i in range(len(messages)):
-			textSurf = titlefont.render(messages[i], 1, (255,255,255))
-			textRect = textSurf.get_rect()
-			textRect.center = ((60+(60/2)+len(messages[i])*5), (60+(60/2)+i*40))
+			amount = messagefont.size(messages[i])
+			print(amount)
+			textSurf = messagefont.render(messages[i], 1, (255,255,255))
+			textRect = pygame.Rect(0+5,i*40, amount[0], amount[1])
+			#textRect.center = (((100/2)), (60+(60/2)+i*40))
+			#textRect.center = (0+amount[0],0+amount[1]+i*40)
 			screen.blit(textSurf, textRect)
 				
 
