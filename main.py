@@ -67,6 +67,7 @@ while True:
 			sock.sendto(byte,server_address)
 			initdata2,addr = sock.recvfrom(4096)
 			initdata2 = initdata2.decode('UTF-8')
+			print(initdata2)
 
 			if initdata2 == "True":
 				break
@@ -80,6 +81,7 @@ while True:
 
 	pygame.display.flip()
 
+print("hello?")
 initdata,addr = sock.recvfrom(4096)
 
 initdata = initdata.decode('UTF-8')
@@ -185,13 +187,7 @@ while True:
 			msgtimeout = 0
 			messages.remove(messages[0])
 
-		for i in range(len(messages)):
-			amount = messagefont.size(messages[i])
-			textSurf = messagefont.render(messages[i], 1, (255,255,255))
-			textRect = pygame.Rect(0+5,i*40, amount[0], amount[1])
-			#textRect.center = (((100/2)), (60+(60/2)+i*40))
-			#textRect.center = (0+amount[0],0+amount[1]+i*40)
-			screen.blit(textSurf, textRect)
+		
 
 
 		player1.render(screen)
@@ -199,6 +195,14 @@ while True:
 		for p in multiplays:
 			if p.index != clientid:
 				p.render(screen)
+
+		for i in range(len(messages)):
+			amount = messagefont.size(messages[i])
+			textSurf = messagefont.render(messages[i], 1, (255,255,255))
+			textRect = pygame.Rect(0+5,i*40, amount[0], amount[1])
+			#textRect.center = (((100/2)), (60+(60/2)+i*40))
+			#textRect.center = (0+amount[0],0+amount[1]+i*40)
+			screen.blit(textSurf, textRect)
 				
 
 
