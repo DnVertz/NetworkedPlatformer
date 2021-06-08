@@ -92,7 +92,7 @@ def timeout():
 
 
 thr = Thread(target = timeout,args =())
-thr.start()
+#thr.start()
 
 class PositionUpdate:
 	def __init__(self, pid, x: int, y: int):
@@ -145,7 +145,6 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 		if split[0] == 'join':
 			allow = True
 			for x in players:
-				print(x.name)
 				if x.name == split[1]:
 					msg = "False"
 					msg = msg.encode()

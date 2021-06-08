@@ -36,18 +36,12 @@ class actor:
 		g = 1.38
 		#wall collision
 		if self.inBounds(self.x+self.vx*(timedelta/10), self.y) == False:
-			
 			self.x += self.vx*(timedelta/10)
-
-		
 		else:
 			self.vx = 0
-
 		#friction
 		if self.vx is not 0:
-			
 			self.vx *= 0.90
-
 		#gravity/falling/floor collisons
 		if self.inBounds(self.x, self.y+g+self.vy) == False:
 			self.vy += g

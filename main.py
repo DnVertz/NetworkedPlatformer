@@ -14,6 +14,7 @@ import sys
 
 HOST = None
 PORT = None
+kicked = False
 state = ui.uistate()
 width = 1024
 height = 640
@@ -65,6 +66,7 @@ while True:
 			msgs = str("join;"+name+"\n")
 			byte = msgs.encode()
 			sock.sendto(byte,server_address)
+			sock.settimeout(0.5)
 			initdata2,addr = sock.recvfrom(4096)
 			initdata2 = initdata2.decode('UTF-8')
 			print(initdata2)
@@ -72,7 +74,7 @@ while True:
 			if initdata2 == "True":
 				break
 			else:
-				title = "Name in use"
+				title = "Name in use!!!!"
 				state.state = "start"
 
 		except:
@@ -82,6 +84,7 @@ while True:
 	pygame.display.flip()
 
 print("hello?")
+sock.settimeout(None)
 initdata,addr = sock.recvfrom(4096)
 
 initdata = initdata.decode('UTF-8')
@@ -103,6 +106,8 @@ def networkthread(clientid):
 	global predict
 	global messages
 	global msgtimeout
+	global kicked
+	#print("yes")
 	while True:
 		try:
 			data,addr2 = sock.recvfrom(4096)
@@ -118,7 +123,6 @@ def networkthread(clientid):
 			if split2[0] == "spawn":
 
 				if split2[1] is not clientid:
-					
 					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1],split2[4]))
 
 			if split2[0] == "join":
@@ -131,6 +135,7 @@ def networkthread(clientid):
 							x.setPos(int(split2[2]),int(split2[3]))
 
 			if split2[0] == "leave":
+				print("x")
 				if split2[1] == clientid:
 					os._exit(1)
 				for x in multiplays:
@@ -183,7 +188,7 @@ while True:
 		if len(messages) > 0:
 			msgtimeout += 1
 
-		if len(messages) == 5 or (msgtimeout > 300 and len(messages)>0):
+		if len(messages) == 7 or (msgtimeout > 350 and len(messages)>0):
 			msgtimeout = 0
 			messages.remove(messages[0])
 
@@ -213,6 +218,7 @@ while True:
 				data2 = "msg;"+str(connec)+";"+str(name)+"\n"
 				data2 = data2.encode('UTF-8')
 				sock.sendto(data2,server_address)
+		#if kicked == True:
 
 		x = inputs.run(state,player1,events,msgbox)
 		if x == True:
