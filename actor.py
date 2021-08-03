@@ -2,7 +2,7 @@ import pygame
 import numpy
 import random
 class actor:
-	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0,index= 0,name = None,predict = False):
+	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0,index= 0,name = None,predict = False,room=0):
 		self.hitboxes = hitboxes
 		self.isjump = False
 		self.predict = predict
@@ -16,6 +16,7 @@ class actor:
 		self.Θ = Θ
 		self.index = index 
 		self.id = 0
+		self.room = 0
 		numbs = []
 		for word in self.index:
 			if word.isdigit():
@@ -81,6 +82,10 @@ class actor:
 
 		self.x = x
 		self.y = y
+
+	def setRoom(self, room):
+
+		self.room = room
 
 	def setVx(self,x):
 		if self.inBounds(self.x , self.y) == False:
