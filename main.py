@@ -11,6 +11,7 @@ import socket
 import os
 import signal
 import sys
+import bullet
 import pygame.freetype
 all_bullets = []
 
@@ -116,6 +117,7 @@ def networkthread(clientid):
 	global messages
 	global msgtimeout
 	global kicked
+	global player1
 	#print("yes")
 	while True:
 		try:
@@ -157,6 +159,16 @@ def networkthread(clientid):
 				messages.append(split2[1]+": "+split2[2])
 				msgtimeout = 0
 
+			if split2[0] == "bspawn":
+				newbul = bullet.bullet(pygame.math.Vector2(int(float(split2[1])),int(float(split2[2]))),pygame.math.Vector2(int(float(split2[3])),int(float(split2[4]))))
+				print(split2[1])
+				newbul.idd = split2[3]
+				player1.all_bullets.append(newbul)
+
+
+
+
+
 			if split2[0] == "die":
 				messages.append(split2[1] +" has died")
 				msgtimeout = 0
@@ -174,7 +186,7 @@ def signal_handler(sig, frame):
 	os._exit(1)
 
 def roomcheck(player1):
-	print(player1.y)
+
 	global lockout
 	if player1.x > 995:
 		if player1.room < 1:
@@ -222,18 +234,20 @@ while True:
 	screen.fill((128,128,128))
 	roomsg = "Room: "+str(player1.room +1)
 	lenofmsg = titlefont2.size(roomsg)
-	print(lenofmsg[0])
+
 
 	if player1.all_bullets is not None:
 		#Check if bullets have collided 
-		for b , p in player1.all_bullets :
-			b += p
-			pos_x = int(b.x)
-			pos_y = int(b.y)
+		for z in player1.all_bullets :
+			z.position += z.speed
+			pos_x = int(z.position.x)
+			pos_y = int(z.position.y)
+
+
 			pygame.draw.rect(screen, (255,255,255), (pos_x, pos_y,10,10))
-			if not 0<b.x < 1000:
-				if not 640 <b.y <0: 
-					player1.remove(b,p)
+			if not 0<z.position.x < 1000:
+				if not 640 <z.position.y <0: 
+					player1.all_bullets.remove(z)
 
 	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
 	screen.blit(char1, (1024-lenofmsg[0] , 10))
@@ -282,8 +296,7 @@ while True:
 
 		for p in multiplays:
 			if p.index != clientid:
-				print(p.room)
-				print(player1.room)
+				
 				if int(p.room) == int(player1.room):
 					p.render(screen)
 
@@ -323,9 +336,10 @@ while True:
 				data2 = "msg;"+str(connec)+";"+str(name)+"\n"
 				data2 = data2.encode('UTF-8')
 				sock.sendto(data2,server_address)
+
 		#if kicked == True:
 		if lockout == False:
-			x = inputs.run(state,player1,events,msgbox)
+			x = inputs.run(state,player1,events,msgbox,sock,server_address)
 
 		if lockout == True:
 			if player1.vy == 0:
