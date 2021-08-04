@@ -12,6 +12,7 @@ import os
 import signal
 import sys
 import pygame.freetype
+all_bullets = []
 
 HOST = None
 PORT = None
@@ -184,7 +185,7 @@ def roomcheck(player1):
 			print(lockout)
 			player1.vx = 0
 			
-	elif player1.x < 2:
+	elif player1.x < 3:
 		if player1.room > 0:
 			player1.room -= 1
 			player1.x = 993
@@ -223,11 +224,23 @@ while True:
 	lenofmsg = titlefont2.size(roomsg)
 	print(lenofmsg[0])
 
+	if player1.all_bullets is not None:
+		#Check if bullets have collided 
+		for b , p in player1.all_bullets :
+			b += p
+			pos_x = int(b.x)
+			pos_y = int(b.y)
+			pygame.draw.rect(screen, (255,255,255), (pos_x, pos_y,10,10))
+			if not 0<b.x < 1000:
+				if not 640 <b.y <0: 
+					player1.remove(b,p)
+
 	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
 	screen.blit(char1, (1024-lenofmsg[0] , 10))
 
 	coll = eval("coll" + str(player1.room))
 	hitbox = []
+
 	for x in coll:
 		hitbox.append(hitboxes.hitboxes(x[0][0],x[0][1],x[1][0],x[1][1]))
 	player1.hitboxes = hitbox

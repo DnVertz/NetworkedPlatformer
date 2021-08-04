@@ -17,6 +17,9 @@ class actor:
 		self.index = index 
 		self.id = 0
 		self.room = 0
+		self.ammo = 10
+		self.maxammo = 10
+		self.all_bullets = []
 		numbs = []
 		for word in self.index:
 			if word.isdigit():
@@ -130,3 +133,18 @@ class actor:
 
 	def setAngle(self, Θ=0):
 			self.Θ = Θ
+
+	def shoot(self):
+		SPEED = 20
+		start = pygame.math.Vector2(self.x,self.y)
+		mouse = pygame.mouse.get_pos()
+		distance = mouse - start
+		positions = pygame.math.Vector2(start) 
+		speed = distance.normalize() * SPEED
+		#if self.ammo < maxammo:
+			#self.ammo -= 1
+		self.all_bullets.append([positions, speed])
+		#return(all_bullets)
+
+	def remove(self,position,speed):
+		self.all_bullets.remove([position, speed])
