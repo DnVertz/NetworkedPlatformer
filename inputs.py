@@ -11,16 +11,15 @@ def run(state,player,events,msgbox):
 
 	if msgbox == False:
 		keys = pygame.key.get_pressed()
-		if player.vy == 0:
-			if keys[pygame.K_d]:
-				player.moveRight()
-						
-				
-			if keys[pygame.K_a]:
-					player.moveLeft()
+		if keys[pygame.K_d]:
+			player.moveRight()
+					
+			
+		if keys[pygame.K_a]:
+				player.moveLeft()
 
-			if keys[pygame.K_SPACE]:
-					player.moveUp()
+		if keys[pygame.K_SPACE]:
+				player.moveUp()
 
 	
 
