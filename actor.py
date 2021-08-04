@@ -41,8 +41,8 @@ class actor:
 		else:
 			self.vx = 0
 		#friction
-		if self.vx is not 0:
-			self.vx *= 0.90
+		if self.vx is not 0 and self.vy == 0:
+			self.vx *= 0.50
 		#gravity/falling/floor collisons
 		if self.inBounds(self.x, self.y+g+self.vy) == False:
 			self.vy += g
@@ -110,12 +110,12 @@ class actor:
 
 	def moveLeft(self):
 		if self.inBounds(self.x , self.y) == False:
-			self.vx -= 0.92
+			self.vx -= 2
 
 
 	def moveRight(self):
 		if self.inBounds(self.x, self.y) == False:
-			self.vx += 0.92
+			self.vx += 2
 
 
 	def setAngle(self, Θ=0):
