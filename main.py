@@ -175,7 +175,7 @@ def signal_handler(sig, frame):
 def roomcheck(player1):
 	print(player1.y)
 	global lockout
-	if player1.x > 997:
+	if player1.x > 995:
 		if player1.room < 1:
 			player1.room += 1
 			player1.x = 4
