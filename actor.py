@@ -44,7 +44,7 @@ class actor:
 		if self.vx is not 0 and self.vy == 0:
 			self.vx *= 0.75
 		elif self.vy is not 0:
-			self.vx *= 0.95
+			self.vx *= 0.98
 
 		#gravity/falling/floor collisons
 		if self.inBounds(self.x, self.y+g+self.vy) == False:
