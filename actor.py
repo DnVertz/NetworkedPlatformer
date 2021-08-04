@@ -113,12 +113,19 @@ class actor:
 
 	def moveLeft(self):
 		if self.inBounds(self.x , self.y) == False:
-			self.vx -= 2
+			if self.vy == 0:
+				self.vx -= 2
+			else:
+				self.vx -= 0.5
+
 
 
 	def moveRight(self):
 		if self.inBounds(self.x, self.y) == False:
-			self.vx += 2
+			if self.vy == 0:
+				self.vx += 2
+			else:
+				self.vx += 0.5
 
 
 	def setAngle(self, Θ=0):
