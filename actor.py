@@ -44,7 +44,7 @@ class actor:
 		if self.vx is not 0 and self.vy == 0:
 			self.vx *= 0.75
 		elif self.vy is not 0:
-			self.vx *= 0.98
+			self.vx *= 0.985
 
 		#gravity/falling/floor collisons
 		if self.inBounds(self.x, self.y+g+self.vy) == False:
@@ -114,7 +114,7 @@ class actor:
 	def moveLeft(self):
 		if self.inBounds(self.x , self.y) == False:
 			if self.vy == 0:
-				self.vx -= 2
+				self.vx -= 1.75
 			else:
 				self.vx -= 0.5
 
@@ -123,7 +123,7 @@ class actor:
 	def moveRight(self):
 		if self.inBounds(self.x, self.y) == False:
 			if self.vy == 0:
-				self.vx += 2
+				self.vx += 1.75
 			else:
 				self.vx += 0.5
 
