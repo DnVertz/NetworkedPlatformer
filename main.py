@@ -178,6 +178,18 @@ def networkthread(clientid):
 				messages.append(split2[1] +" has died")
 				msgtimeout = 0
 
+			if split2[0] == "killed":
+				names = None
+				print(split2)
+				for p in multiplays:
+					print(p.index)
+					if str(p.index) == str(split2[2]):
+						names = p.name
+
+
+				messages.append(names +" has killed "+split2[1])
+				msgtimeout = 0
+
 	os._exit(1)
 
 thr = Thread(target = networkthread,args =(str(clientid),))
@@ -261,13 +273,14 @@ while True:
 					if str(z.idd) != str(clientid):
 						if int(z.room) == player1.room:
 							if deathtimeout > 100:
+								#send bullet id to server 
 								player1.room = 0
 								player1.x = 4
 								player1.y = 0
 								lockout = True
 								print(lockout)
 								player1.vx = 0
-								data2 = "die;"+str(player1.name)+"\n"
+								data2 = "killed;"+str(player1.name)+";"+str(z.idd)+"\n"
 								data2 = data2.encode('UTF-8')
 								sock.sendto(data2,server_address)
 								deathtimeout = 0
@@ -275,7 +288,7 @@ while True:
 			#print(clientid)
 			if not 0<z.position.x < 1000:
 				if not 640 <z.position.y <0: 
-					print("removed")
+
 					player1.all_bullets.remove(z)
 
 	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
@@ -333,10 +346,17 @@ while True:
 			amount = messagefont.size(messages[i])
 			lst = messages[i].split()
 			lst2 = list(lst[0])
-			print(lst2)
+
 			if ":" not in lst2:
-				message = lst[0]+" "+lst[1]+" "
-				message2 = lst[2]
+				if len(lst) <= 3:
+					print(lst)
+					message = lst[0]+" "+lst[1]+" "
+					message2 = lst[2]
+				else:
+					message = lst[0]+" "+lst[1]+" "+lst[2]
+					message2 = " "+lst[3]
+
+				
 				font = pygame.freetype.Font(None, 50)
 				amount2 = messagefont.size(message)
 				
