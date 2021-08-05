@@ -24,6 +24,8 @@ width = 1024
 height = 640
 quitol = False
 clientid = 1
+deathtimeout = 0
+
 title = "Platformer"
 player1 = None
 predict = False
@@ -230,6 +232,7 @@ def roomcheck(player1):
 
 
 while True:
+	deathtimeout += 1
 
 	signal.signal(signal.SIGINT, signal_handler)
 	roomcheck(player1)
@@ -254,19 +257,22 @@ while True:
 				if player1.y + player1.h > pos_y and player1.y < (pos_y+20):
 					if str(z.idd) != str(clientid):
 						if int(z.room) == player1.room:
-							player1.room = 0
-							player1.x = 4
-							player1.y = 0
-							lockout = True
-							print(lockout)
-							player1.vx = 0
-							data2 = "die;"+str(player1.name)+"\n"
-							data2 = data2.encode('UTF-8')
-							sock.sendto(data2,server_address)
+							if deathtimeout > 100:
+								player1.room = 0
+								player1.x = 4
+								player1.y = 0
+								lockout = True
+								print(lockout)
+								player1.vx = 0
+								data2 = "die;"+str(player1.name)+"\n"
+								data2 = data2.encode('UTF-8')
+								sock.sendto(data2,server_address)
+								deathtimeout = 0
 			#print(z.idd)
 			#print(clientid)
 			if not 0<z.position.x < 1000:
 				if not 640 <z.position.y <0: 
+					print("removed")
 					player1.all_bullets.remove(z)
 
 	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))

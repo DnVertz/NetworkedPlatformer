@@ -232,6 +232,9 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 				#if bullet.addr is not p.addr:
 				sendBulletSpawn(split[1],split[2],split[3],split[4],split[5],p.addr,socket,split[6])
 
+		if len(bullets) > 50:
+			bullets.remove(bullets[1])
+
 
 
 		
