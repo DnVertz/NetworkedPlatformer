@@ -32,13 +32,16 @@ def run(state,player,events,msgbox,sock,server,clientid,deathtimeout):
 		if keys[pygame.K_3]:
 				player.weapon_three()
 
-		if keys[pygame.K_r]:
-			if shooting = False:
-				player.reload()
-
 		if mouse_buttons[0]:
 			shooting = True
-				player.shoot(sock,server,clientid,deathtimeout)
+			player.shoot(sock,server,clientid,deathtimeout)
+
+
+		if keys[pygame.K_r]:
+			if shooting == False:
+				player.reload()
+
+		
 
 	
 

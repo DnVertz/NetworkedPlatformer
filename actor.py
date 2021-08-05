@@ -24,6 +24,9 @@ class actor:
 		self.room = 0
 		self.ammo = 0
 		self.maxammo = 10
+		self.reloadtime = 50
+		self.reloadprog = 0
+		self.reloading = False
 		self.all_bullets = []
 		numbs = []
 		for word in self.index:
@@ -76,6 +79,13 @@ class actor:
 			return False
 
 	def render(self, screen):
+		if self.reloading == True:
+			self.reloadprog += 1
+
+			if self.reloadprog > self.reloadtime:
+				self.reloading = False
+				self.ammo = 0
+
 		buttonfont = pygame.font.Font(r"arial.ttf", 25)
 
 		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
@@ -142,42 +152,53 @@ class actor:
 
 	def reload(self):
 			self.ammo = 0
+			self.reloadprog = 0
 	def weapon_one(self):
+			self.ammo = 0
 			self.maxammo = 10
 			self.spread = 10
 			self.bulletsize = 2
+			self.reloadtime = 50
 
 	def weapon_two(self):
+			self.ammo = 0
 			self.maxammo = 5
 			self.spread = 2
 			self.bulletsize = 5
+			self.reloadtime = 70
 
 	def weapon_three(self):
+			#write in thing that caches weapon ammo
+			self.ammo = 0
 			self.maxammo = 2
 			self.spread = 20
 			self.bulletsize = 10
+			self.reloadtime = 30
 
 	def reload(self):
-			self.ammo = 0
+			self.reloadprog = 0
+			self.reloading = True
+			
 
 	def shoot(self,sock,server,clientid,deathtimeout):
 		if deathtimeout > 100:
-			SPEED = 20
-			start = pygame.math.Vector2(self.x,self.y)
-			mouse = pygame.mouse.get_pos()
-			distance = mouse - start
-			positions = pygame.math.Vector2(start) 
-			speed = distance.normalize() * SPEED
-			newbullet = bullet.bullet(positions,speed)
-			newbullet.room = self.room
-			newbullet.idd = clientid
-			newbullet.size = self.bulletsize
-			if self.ammo < self.maxammo:
-				self.ammo += 1
-				#self.all_bullets.append(newbullet)
-				data2 = "joinbullet;"+str(newbullet.position.x)+";"+str(newbullet.position.y+random.randint(-int(self.spread),int(self.spread)))+";"+str(newbullet.speed.x)+";"+str(newbullet.speed.y)+";"+str(newbullet.idd)+";"+str(newbullet.room)+";"+str(newbullet.size)+"\n"
-				data2 = data2.encode('UTF-8')
-				sock.sendto(data2,server)
+			if self.reloading == False:
+				SPEED = 20
+				start = pygame.math.Vector2(self.x,self.y)
+				mouse = pygame.mouse.get_pos()
+				distance = mouse - start
+				positions = pygame.math.Vector2(start) 
+				speed = distance.normalize() * SPEED
+				newbullet = bullet.bullet(positions,speed)
+				newbullet.room = self.room
+				newbullet.idd = clientid
+				newbullet.size = self.bulletsize
+				if self.ammo < self.maxammo:
+					self.ammo += 1
+					#self.all_bullets.append(newbullet)
+					data2 = "joinbullet;"+str(newbullet.position.x)+";"+str(newbullet.position.y+random.randint(-int(self.spread),int(self.spread)))+";"+str(newbullet.speed.x)+";"+str(newbullet.speed.y)+";"+str(newbullet.idd)+";"+str(newbullet.room)+";"+str(newbullet.size)+"\n"
+					data2 = data2.encode('UTF-8')
+					sock.sendto(data2,server)
 		#return(all_bullets)
 
 	def remove(self,position,speed):

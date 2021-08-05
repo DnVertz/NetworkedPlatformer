@@ -256,6 +256,8 @@ while True:
 	screen.fill((128,128,128))
 	roomsg = "Room: "+str(player1.room +1)
 	lenofmsg = titlefont2.size(roomsg)
+	roomsg2 = "Room: "+str(int(10-player1.ammo))
+	lenofmsg3 = titlefont2.size(roomsg2)
 
 
 	if player1.all_bullets is not None:
@@ -302,6 +304,15 @@ while True:
 
 	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
 	screen.blit(char1, (1024-lenofmsg[0] , 10))
+	char3 = titlefont2.render("Ammo: "+str(int(player1.maxammo-player1.ammo)), 1, (255,255,255))
+	screen.blit(char3, (1020-lenofmsg3[0] , 50))
+
+
+
+	if player1.reloading == True:
+		lenofmsg2 = titlefont2.size("Reloading")
+		char2 = titlefont2.render("Reloading", 1, (255,255,255))
+		screen.blit(char2, (512+lenofmsg2[0], 320))
 
 	coll = eval("coll" + str(player1.room))
 	hitbox = []
