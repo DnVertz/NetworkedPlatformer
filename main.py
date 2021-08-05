@@ -201,6 +201,7 @@ def roomcheck(player1):
 			lockout = True
 			print(lockout)
 			player1.vx = 0
+			deathtimeout = 0
 			
 	elif player1.x < 3:
 		if player1.room > 0:
@@ -210,6 +211,7 @@ def roomcheck(player1):
 			lockout = True
 			print(lockout)
 			player1.vx = 0
+			deathtimeout = 0
 
 	if player1.y > 560:
 		player1.room = 0
@@ -218,6 +220,7 @@ def roomcheck(player1):
 		lockout = True
 		print(lockout)
 		player1.vx = 0
+
 		data2 = "die;"+str(player1.name)+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)

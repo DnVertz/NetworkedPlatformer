@@ -138,7 +138,7 @@ class actor:
 			self.Θ = Θ
 
 	def shoot(self,sock,server,clientid):
-		SPEED = 20
+		SPEED = 40
 		start = pygame.math.Vector2(self.x,self.y)
 		mouse = pygame.mouse.get_pos()
 		distance = mouse - start
