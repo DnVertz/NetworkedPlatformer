@@ -252,16 +252,17 @@ while True:
 
 			if (player1.x) < (pos_x+20) and player1.x + player1.w > pos_x:
 				if player1.y + player1.h > pos_y and player1.y < (pos_y+20):
-					if str(z.idd) != str(clientid) and z.room == player1.room:
-						player1.room = 0
-						player1.x = 4
-						player1.y = 0
-						lockout = True
-						print(lockout)
-						player1.vx = 0
-						data2 = "die;"+str(player1.name)+"\n"
-						data2 = data2.encode('UTF-8')
-						sock.sendto(data2,server_address)
+					if str(z.idd) != str(clientid):
+						if int(z.room) == player1.room:
+							player1.room = 0
+							player1.x = 4
+							player1.y = 0
+							lockout = True
+							print(lockout)
+							player1.vx = 0
+							data2 = "die;"+str(player1.name)+"\n"
+							data2 = data2.encode('UTF-8')
+							sock.sendto(data2,server_address)
 			#print(z.idd)
 			#print(clientid)
 			if not 0<z.position.x < 1000:
