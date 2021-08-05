@@ -168,6 +168,7 @@ def networkthread(clientid):
 				newbul.idd = split2[5]
 
 				newbul.room = split2[6]
+				newbul.size = split2[7]
 				player1.all_bullets.append(newbul)
 
 
@@ -265,11 +266,13 @@ while True:
 			pos_y = int(z.position.y)
 
 			if int(z.room) == player1.room:
-				pygame.draw.rect(screen, (255,255,255), (pos_x, pos_y,10,10))
+				#pygame.draw.rect(screen, (255,255,255), (pos_x, pos_y,10,10))
+				#print(z.size)
+				pygame.draw.circle(screen, (255,255,255), (pos_x, pos_y),int(z.size))
 
 
-			if (player1.x) < (pos_x+20) and player1.x + player1.w > pos_x:
-				if player1.y + player1.h > pos_y and player1.y < (pos_y+20):
+			if (player1.x) < (pos_x+10) and player1.x + player1.w > pos_x:
+				if player1.y + player1.h > pos_y and player1.y < (pos_y+10):
 					if str(z.idd) != str(clientid):
 						if int(z.room) == player1.room:
 							if deathtimeout > 100:
@@ -286,10 +289,16 @@ while True:
 								deathtimeout = 0
 			#print(z.idd)
 			#print(clientid)
-			if not 0<z.position.x < 1000:
+			"""if not 0<z.position.x < 1000:
 				if not 640 <z.position.y <0: 
-
-					player1.all_bullets.remove(z)
+					player1.all_bullets.remove(z)"""
+			
+			for hitboxs in hitbox:
+				if (hitboxs.x) < (int(float(z.position.x))) and hitboxs.x + hitboxs.w +10 > int(float(z.position.x)):
+					if hitboxs.y + hitboxs.h+10> int(float(z.position.y)) and hitboxs.y< (int(float(z.position.y))) :
+						if z in player1.all_bullets:
+							player1.all_bullets.remove(z)
+						
 
 	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
 	screen.blit(char1, (1024-lenofmsg[0] , 10))
@@ -388,7 +397,7 @@ while True:
 
 		#if kicked == True:
 		if lockout == False:
-			x = inputs.run(state,player1,events,msgbox,sock,server_address,clientid)
+			x = inputs.run(state,player1,events,msgbox,sock,server_address,clientid,deathtimeout)
 
 		if lockout == True:
 			if player1.vy == 0:

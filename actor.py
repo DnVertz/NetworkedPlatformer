@@ -14,13 +14,15 @@ class actor:
 		self.y = y
 		self.vx = 0
 		self.vy = 0
+		self.bulletsize = 2
 		self.w = w
 		self.h = h
 		self.Θ = Θ
+		self.spread = 10
 		self.index = index 
 		self.id = 0
 		self.room = 0
-		self.ammo = 10
+		self.ammo = 0
 		self.maxammo = 10
 		self.all_bullets = []
 		numbs = []
@@ -134,25 +136,48 @@ class actor:
 				self.vx += 0.5
 
 
+
 	def setAngle(self, Θ=0):
 			self.Θ = Θ
 
-	def shoot(self,sock,server,clientid):
-		SPEED = 40
-		start = pygame.math.Vector2(self.x,self.y)
-		mouse = pygame.mouse.get_pos()
-		distance = mouse - start
-		positions = pygame.math.Vector2(start) 
-		speed = distance.normalize() * SPEED
-		newbullet = bullet.bullet(positions,speed)
-		newbullet.room = self.room
-		newbullet.idd = clientid
-		#if self.ammo < maxammo:
-			#self.ammo -= 1
-		#self.all_bullets.append(newbullet)
-		data2 = "joinbullet;"+str(newbullet.position.x)+";"+str(newbullet.position.y)+";"+str(newbullet.speed.x)+";"+str(newbullet.speed.y)+";"+str(newbullet.idd)+";"+str(newbullet.room)+"\n"
-		data2 = data2.encode('UTF-8')
-		sock.sendto(data2,server)
+	def reload(self):
+			self.ammo = 0
+	def weapon_one(self):
+			self.maxammo = 10
+			self.spread = 10
+			self.bulletsize = 2
+
+	def weapon_two(self):
+			self.maxammo = 5
+			self.spread = 2
+			self.bulletsize = 5
+
+	def weapon_three(self):
+			self.maxammo = 2
+			self.spread = 20
+			self.bulletsize = 10
+
+	def reload(self):
+			self.ammo = 0
+
+	def shoot(self,sock,server,clientid,deathtimeout):
+		if deathtimeout > 100:
+			SPEED = 20
+			start = pygame.math.Vector2(self.x,self.y)
+			mouse = pygame.mouse.get_pos()
+			distance = mouse - start
+			positions = pygame.math.Vector2(start) 
+			speed = distance.normalize() * SPEED
+			newbullet = bullet.bullet(positions,speed)
+			newbullet.room = self.room
+			newbullet.idd = clientid
+			newbullet.size = self.bulletsize
+			if self.ammo < self.maxammo:
+				self.ammo += 1
+				#self.all_bullets.append(newbullet)
+				data2 = "joinbullet;"+str(newbullet.position.x)+";"+str(newbullet.position.y+random.randint(-int(self.spread),int(self.spread)))+";"+str(newbullet.speed.x)+";"+str(newbullet.speed.y)+";"+str(newbullet.idd)+";"+str(newbullet.room)+";"+str(newbullet.size)+"\n"
+				data2 = data2.encode('UTF-8')
+				sock.sendto(data2,server)
 		#return(all_bullets)
 
 	def remove(self,position,speed):

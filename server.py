@@ -41,8 +41,8 @@ def sendPlayerInit(player, addr,socket):
 	socket.sendto(data.encode('UTF-8'),addr)
 
 
-def sendBulletSpawn(x,y,vx,vy,idd,addr,socket,room):
-	data = "bspawn;"+str(x)+";"+str(y)+";"+str(vx)+";"+str(vy)+";"+str(idd)+";"+str(room)+"\n"
+def sendBulletSpawn(x,y,vx,vy,idd,addr,socket,room,size):
+	data = "bspawn;"+str(x)+";"+str(y)+";"+str(vx)+";"+str(vy)+";"+str(idd)+";"+str(room)+";"+str(size)+"\n"
 	socket.sendto(data.encode('UTF-8'),addr)
 
 
@@ -238,7 +238,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 			bullets.append(bullet)
 			for p in players:
 				#if bullet.addr is not p.addr:
-				sendBulletSpawn(split[1],split[2],split[3],split[4],split[5],p.addr,socket,split[6])
+				sendBulletSpawn(split[1],split[2],split[3],split[4],split[5],p.addr,socket,split[6],split[7])
 
 		if len(bullets) > 50:
 			bullets.remove(bullets[1])
