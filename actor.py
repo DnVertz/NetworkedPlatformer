@@ -28,6 +28,10 @@ class actor:
 		self.reloadprog = 0
 		self.reloading = False
 		self.all_bullets = []
+		self.activeWeapon = 1
+		self.ammo1 = 0
+		self.ammo2 = 0
+		self.ammo3 = 0
 		numbs = []
 		for word in self.index:
 			if word.isdigit():
@@ -78,26 +82,7 @@ class actor:
 						return True	
 			return False
 
-	def render(self, screen):
-		if self.reloading == True:
-			self.reloadprog += 1
-
-			if self.reloadprog > self.reloadtime:
-				self.reloading = False
-				self.ammo = 0
-
-		buttonfont = pygame.font.Font(r"arial.ttf", 25)
-
-		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
-		rotated = pygame.transform.rotate(self.image,0)
-		rotatedrect = rotated.get_rect(center=rects.center)
-		textSurf = buttonfont.render(self.name, 1, (255,255,255))
-		textRect = textSurf.get_rect()
-		textRect.center = ((self.x+10, self.y-20))
-		screen.blit(textSurf, textRect)
-		
-		screen.blit(self.image, rects)
-		
+	
 
 	def setPos(self, x, y):
 
@@ -154,26 +139,31 @@ class actor:
 			self.ammo = 0
 			self.reloadprog = 0
 	def weapon_one(self):
-			self.ammo = 0
+			self.ammo = self.ammo1
 			self.maxammo = 10
 			self.spread = 10
 			self.bulletsize = 2
 			self.reloadtime = 50
+			self.activeWeapon = 1
 
 	def weapon_two(self):
-			self.ammo = 0
+			self.ammo = self.ammo2
 			self.maxammo = 5
 			self.spread = 2
 			self.bulletsize = 5
 			self.reloadtime = 70
+			self.activeWeapon = 2
+
 
 	def weapon_three(self):
 			#write in thing that caches weapon ammo
-			self.ammo = 0
+			self.ammo = self.ammo3
 			self.maxammo = 2
 			self.spread = 20
 			self.bulletsize = 10
 			self.reloadtime = 30
+			self.activeWeapon = 3
+
 
 	def reload(self):
 			self.reloadprog = 0
@@ -200,6 +190,36 @@ class actor:
 					data2 = data2.encode('UTF-8')
 					sock.sendto(data2,server)
 		#return(all_bullets)
+
+	def render(self, screen):
+		if self.reloading == True:
+			self.reloadprog += 1
+
+			if self.reloadprog > self.reloadtime:
+				self.reloading = False
+				self.ammo = 0
+
+		if self.activeWeapon == 1:
+			self.ammo1 = self.ammo
+
+		if self.activeWeapon == 2:
+			self.ammo2 = self.ammo
+
+		if self.activeWeapon == 3:
+			self.ammo3 = self.ammo
+
+		buttonfont = pygame.font.Font(r"arial.ttf", 25)
+
+		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
+		rotated = pygame.transform.rotate(self.image,0)
+		rotatedrect = rotated.get_rect(center=rects.center)
+		textSurf = buttonfont.render(self.name, 1, (255,255,255))
+		textRect = textSurf.get_rect()
+		textRect.center = ((self.x+10, self.y-20))
+		screen.blit(textSurf, textRect)
+		
+		screen.blit(self.image, rects)
+		
 
 	def remove(self,position,speed):
 		self.all_bullets.remove([position, speed])
