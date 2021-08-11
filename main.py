@@ -24,6 +24,7 @@ height = 640
 quitol = False
 clientid = 1
 deathtimeout = 0
+regen = 0
 
 title = "Platformer"
 player1 = None
@@ -226,6 +227,7 @@ def roomcheck(player1):
 		lockout = True
 		print(lockout)
 		player1.vx = 0
+		player1.hitpoints = 100
 
 		data2 = "die;"+str(player1.name)+"\n"
 		data2 = data2.encode('UTF-8')
@@ -262,6 +264,7 @@ while True:
 							if deathtimeout > 100:
 								#send bullet id to server 
 								player1.hitpoints -= int(z.size)*2
+								regen = 0
 								if player1.hitpoints <= 0:
 	
 									player1.room = 0
@@ -336,6 +339,16 @@ while True:
 
 
 		player1.render(screen,clientid)
+
+		if player1.hitpoints < 100:
+			regen += 1
+			if regen > 70:
+				if player1.hitpoints + 10 > 100:
+					player1.hitpoints = 100
+				else:
+					player1.hitpoints += 10
+				regen = 0
+
 
 		for p in multiplays:
 			if p.index != clientid:
