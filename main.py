@@ -2,7 +2,6 @@ from threading import Thread
 import pygame 
 import ui
 import menu
-#import player
 import inputs
 import hitboxes
 import actor
@@ -35,8 +34,6 @@ msgtimeout = 0
 deathmsgtimeout = 0
 
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
-#corner(x,y),(width,height)
-#,[(500,10),(1,500)]
 
 coll = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(300,500)],[(500,450),(60,125)],[(800,400),(500,400)]
 coll0 = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(300,500)],[(500,450),(60,125)],[(800,400),(500,400)]
@@ -120,7 +117,6 @@ def networkthread(clientid):
 	global msgtimeout
 	global kicked
 	global player1
-	#print("yes")
 	while True:
 		try:
 			data,addr2 = sock.recvfrom(4096)
@@ -163,17 +159,10 @@ def networkthread(clientid):
 
 			if split2[0] == "bspawn":
 				newbul = bullet.bullet(pygame.math.Vector2(int(float(split2[1])),int(float(split2[2]))),pygame.math.Vector2(int(float(split2[3])),int(float(split2[4]))))
-	
-
 				newbul.idd = split2[5]
-
 				newbul.room = split2[6]
 				newbul.size = split2[7]
 				player1.all_bullets.append(newbul)
-
-
-
-
 
 			if split2[0] == "die":
 				messages.append(split2[1] +" has died")
@@ -238,15 +227,6 @@ def roomcheck(player1):
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 
-			
-			
-
-
-
-
-
-
-
 while True:
 	deathtimeout += 1
 
@@ -256,7 +236,7 @@ while True:
 	screen.fill((128,128,128))
 	roomsg = "Room: "+str(player1.room +1)
 	lenofmsg = titlefont2.size(roomsg)
-	roomsg2 = "Room: "+str(int(10-player1.ammo))
+	roomsg2 = "Ammo: "+str(int(player1.maxammo-player1.ammo))
 	lenofmsg3 = titlefont2.size(roomsg2)
 
 
@@ -268,8 +248,6 @@ while True:
 			pos_y = int(z.position.y)
 
 			if int(z.room) == player1.room:
-				#pygame.draw.rect(screen, (255,255,255), (pos_x, pos_y,10,10))
-				#print(z.size)
 				pygame.draw.circle(screen, (255,255,255), (pos_x, pos_y),int(z.size))
 
 
@@ -289,12 +267,7 @@ while True:
 								data2 = data2.encode('UTF-8')
 								sock.sendto(data2,server_address)
 								deathtimeout = 0
-			#print(z.idd)
-			#print(clientid)
-			"""if not 0<z.position.x < 1000:
-				if not 640 <z.position.y <0: 
-					player1.all_bullets.remove(z)"""
-			
+
 			for hitboxs in hitbox:
 				if (hitboxs.x) < (int(float(z.position.x))) and hitboxs.x + hitboxs.w +10 > int(float(z.position.x)):
 					if hitboxs.y + hitboxs.h+10> int(float(z.position.y)) and hitboxs.y< (int(float(z.position.y))) :
@@ -304,7 +277,7 @@ while True:
 
 	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
 	screen.blit(char1, (1024-lenofmsg[0] , 10))
-	char3 = titlefont2.render("Ammo: "+str(int(player1.maxammo-player1.ammo)), 1, (255,255,255))
+	char3 = titlefont2.render((roomsg2), 1, (255,255,255))
 	screen.blit(char3, (1020-lenofmsg3[0] , 50))
 
 
@@ -312,7 +285,7 @@ while True:
 	if player1.reloading == True:
 		lenofmsg2 = titlefont2.size("Reloading")
 		char2 = titlefont2.render("Reloading", 1, (255,255,255))
-		screen.blit(char2, (512+lenofmsg2[0], 320))
+		screen.blit(char2, (315+lenofmsg2[0], 320))
 
 	coll = eval("coll" + str(player1.room))
 	hitbox = []
@@ -419,14 +392,5 @@ while True:
 			else:
 				msgbox = True
 
-
-			
-		
-
-
 		pygame.display.flip()
-
-
-
-
 sock.close()

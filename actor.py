@@ -32,6 +32,8 @@ class actor:
 		self.ammo1 = 0
 		self.ammo2 = 0
 		self.ammo3 = 0
+		self.shootimeout = 10
+		self.weaontimeout = 10
 		numbs = []
 		for word in self.index:
 			if word.isdigit():
@@ -145,6 +147,7 @@ class actor:
 			self.bulletsize = 2
 			self.reloadtime = 50
 			self.activeWeapon = 1
+			self.weaontimeout = 10
 
 	def weapon_two(self):
 			self.ammo = self.ammo2
@@ -153,6 +156,7 @@ class actor:
 			self.bulletsize = 5
 			self.reloadtime = 70
 			self.activeWeapon = 2
+			self.weaontimeout = 20
 
 
 	def weapon_three(self):
@@ -163,6 +167,7 @@ class actor:
 			self.bulletsize = 10
 			self.reloadtime = 30
 			self.activeWeapon = 3
+			self.weaontimeout = 2
 
 
 	def reload(self):
@@ -172,7 +177,8 @@ class actor:
 
 	def shoot(self,sock,server,clientid,deathtimeout):
 		if deathtimeout > 100:
-			if self.reloading == False:
+			if self.reloading == False and self.shootimeout > self.weaontimeout:
+				self.shootimeout = 0
 				SPEED = 20
 				start = pygame.math.Vector2(self.x,self.y)
 				mouse = pygame.mouse.get_pos()
@@ -189,6 +195,7 @@ class actor:
 					data2 = "joinbullet;"+str(newbullet.position.x)+";"+str(newbullet.position.y+random.randint(-int(self.spread),int(self.spread)))+";"+str(newbullet.speed.x)+";"+str(newbullet.speed.y)+";"+str(newbullet.idd)+";"+str(newbullet.room)+";"+str(newbullet.size)+"\n"
 					data2 = data2.encode('UTF-8')
 					sock.sendto(data2,server)
+			
 		#return(all_bullets)
 
 	def render(self, screen):
@@ -199,6 +206,7 @@ class actor:
 				self.reloading = False
 				self.ammo = 0
 
+
 		if self.activeWeapon == 1:
 			self.ammo1 = self.ammo
 
@@ -207,6 +215,9 @@ class actor:
 
 		if self.activeWeapon == 3:
 			self.ammo3 = self.ammo
+
+		if self.shootimeout <= self.weaontimeout:
+				self.shootimeout += 1
 
 		buttonfont = pygame.font.Font(r"arial.ttf", 25)
 
