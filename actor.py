@@ -5,7 +5,7 @@ import bullet
 #import uuid
 import socket
 class actor:
-	def __init__(self, x=0, y=0, w=0, h=0, Θ=0,hitboxes=0,index= 0,name = None,predict = False,room=0):
+	def __init__(self, x=0, y=0, w=0, h=0, angle=0,hitboxes=0,index= 0,name = None,predict = False,room=0):
 		self.hitboxes = hitboxes
 		self.isjump = False
 		self.predict = predict
@@ -14,11 +14,11 @@ class actor:
 		self.y = y
 		self.vx = 0
 		self.vy = 0
-		self.bulletsize = 2
+		self.bulletsize = 4
 		self.w = w
 		self.h = h
-		self.Θ = Θ
-		self.spread = 10
+		self.angle = 0
+		self.spread = 5
 		self.index = index 
 		self.id = 0
 		self.room = 0
@@ -48,6 +48,8 @@ class actor:
 		colored_img[:, :, 2] = 30*number    # <-- Blue
 		img_surface = pygame.surfarray.make_surface(colored_img)
 		self.image = img_surface
+		self.image2 = pygame.image.load(r'mg.png')
+		self.image2 = pygame.transform.scale(self.image2, (112, 37))
 
 	def physicsHandler(self,timedelta):
 		# gravity
@@ -135,7 +137,9 @@ class actor:
 
 
 	def setAngle(self, Θ=0):
-			self.Θ = Θ
+			self.angle = Θ
+			print(self.angle)
+
 
 	def reload(self):
 			self.ammo = 0
@@ -143,11 +147,13 @@ class actor:
 	def weapon_one(self):
 			self.ammo = self.ammo1
 			self.maxammo = 10
-			self.spread = 10
-			self.bulletsize = 2
+			self.spread = 5
+			self.bulletsize = 4
 			self.reloadtime = 50
 			self.activeWeapon = 1
 			self.weaontimeout = 10
+			#self.image2 = pygame.image.load(r'mg.png')
+			#self.image2 = pygame.transform.scale(self.image2, (112, 37))
 
 	def weapon_two(self):
 			self.ammo = self.ammo2
@@ -157,17 +163,18 @@ class actor:
 			self.reloadtime = 70
 			self.activeWeapon = 2
 			self.weaontimeout = 20
+			
 
 
 	def weapon_three(self):
-			#write in thing that caches weapon ammo
 			self.ammo = self.ammo3
 			self.maxammo = 2
-			self.spread = 20
+			self.spread = 2
 			self.bulletsize = 10
 			self.reloadtime = 30
 			self.activeWeapon = 3
 			self.weaontimeout = 2
+			
 
 
 	def reload(self):
@@ -180,10 +187,11 @@ class actor:
 			if self.reloading == False and self.shootimeout > self.weaontimeout:
 				self.shootimeout = 0
 				SPEED = 20
-				start = pygame.math.Vector2(self.x,self.y)
+				start = pygame.math.Vector2(self.x+(self.w/2),self.y+(self.h/2))
 				mouse = pygame.mouse.get_pos()
 				distance = mouse - start
 				positions = pygame.math.Vector2(start) 
+				aim = mouse - start
 				speed = distance.normalize() * SPEED
 				newbullet = bullet.bullet(positions,speed)
 				newbullet.room = self.room
@@ -192,13 +200,23 @@ class actor:
 				if self.ammo < self.maxammo:
 					self.ammo += 1
 					#self.all_bullets.append(newbullet)
-					data2 = "joinbullet;"+str(newbullet.position.x)+";"+str(newbullet.position.y+random.randint(-int(self.spread),int(self.spread)))+";"+str(newbullet.speed.x)+";"+str(newbullet.speed.y)+";"+str(newbullet.idd)+";"+str(newbullet.room)+";"+str(newbullet.size)+"\n"
+					data2 = "joinbullet;"+str(newbullet.position.x)+";"+str(newbullet.position.y+random.randint(-int(self.spread),int(0)))+";"+str(newbullet.speed.x)+";"+str(newbullet.speed.y)+";"+str(newbullet.idd)+";"+str(newbullet.room)+";"+str(newbullet.size)+"\n"
 					data2 = data2.encode('UTF-8')
 					sock.sendto(data2,server)
 			
 		#return(all_bullets)
 
-	def render(self, screen):
+	def render(self, screen,clientid):
+		if self.index == clientid:
+			start = pygame.math.Vector2(self.x,self.y)
+			mouse = pygame.mouse.get_pos() 
+			aim = mouse - start
+			angles = aim.angle_to(pygame.math.Vector2(1, 0))
+			self.angle = int(angles)
+			print(self.angle)
+		else:
+			print(self.angle)
+		
 		if self.reloading == True:
 			self.reloadprog += 1
 
@@ -209,27 +227,44 @@ class actor:
 
 		if self.activeWeapon == 1:
 			self.ammo1 = self.ammo
+			self.image2 = pygame.image.load(r'mg.png')
+			self.image2 = pygame.transform.scale(self.image2, (112, 37))
+
 
 		if self.activeWeapon == 2:
 			self.ammo2 = self.ammo
+			self.image2 = pygame.image.load(r'rifle.png')
+			self.image2 = pygame.transform.scale(self.image2, (112, 37))
+
+
 
 		if self.activeWeapon == 3:
 			self.ammo3 = self.ammo
+			self.image2 = pygame.image.load(r'shotgun.png')
+			self.image2 = pygame.transform.scale(self.image2, (112, 37))
+
 
 		if self.shootimeout <= self.weaontimeout:
 				self.shootimeout += 1
 
 		buttonfont = pygame.font.Font(r"arial.ttf", 25)
 
+		if abs(self.angle) > 90:
+			gunrect = pygame.transform.flip(self.image2, False, True)
+		else:
+			gunrect = self.image2
+
 		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
-		rotated = pygame.transform.rotate(self.image,0)
+		rects2 = pygame.Rect((self.x, self.y), (112, 37))
+		rotated = pygame.transform.rotate(gunrect,self.angle)
 		rotatedrect = rotated.get_rect(center=rects.center)
 		textSurf = buttonfont.render(self.name, 1, (255,255,255))
 		textRect = textSurf.get_rect()
 		textRect.center = ((self.x+10, self.y-20))
 		screen.blit(textSurf, textRect)
-		
+
 		screen.blit(self.image, rects)
+		screen.blit(rotated, rotatedrect)
 		
 
 	def remove(self,position,speed):

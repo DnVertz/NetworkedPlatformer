@@ -144,6 +144,9 @@ def networkthread(clientid):
 							x.setPos(int(split2[2]),int(split2[3]))
 				
 							x.setRoom(split2[4])
+							if len(split2) > 5:
+								x.activeWeapon = int(split2[5])
+								x.angle = int(split2[6])
 
 			if split2[0] == "leave":
 				print("x")
@@ -313,7 +316,7 @@ while True:
 	if player1 is not None:
 
 		player1.physicsHandler(fps)
-		data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+";"+str(int(player1.room))+"\n"
+		data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 		if len(messages) > 0:
@@ -327,13 +330,13 @@ while True:
 		
 
 
-		player1.render(screen)
+		player1.render(screen,clientid)
 
 		for p in multiplays:
 			if p.index != clientid:
 				
 				if int(p.room) == int(player1.room):
-					p.render(screen)
+					p.render(screen,clientid)
 
 		for i in range(len(messages)):
 			amount = messagefont.size(messages[i])
