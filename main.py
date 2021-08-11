@@ -147,6 +147,7 @@ def networkthread(clientid):
 							if len(split2) > 5:
 								x.activeWeapon = int(split2[5])
 								x.angle = int(split2[6])
+								x.hitpoints = int(split2[7])
 
 			if split2[0] == "leave":
 				print("x")
@@ -260,16 +261,20 @@ while True:
 						if int(z.room) == player1.room:
 							if deathtimeout > 100:
 								#send bullet id to server 
-								player1.room = 0
-								player1.x = 4
-								player1.y = 0
-								lockout = True
-								print(lockout)
-								player1.vx = 0
-								data2 = "killed;"+str(player1.name)+";"+str(z.idd)+"\n"
-								data2 = data2.encode('UTF-8')
-								sock.sendto(data2,server_address)
-								deathtimeout = 0
+								player1.hitpoints -= int(z.size)*2
+								if player1.hitpoints <= 0:
+	
+									player1.room = 0
+									player1.x = 4
+									player1.y = 0
+									player1.hitpoints = 100
+									lockout = True
+									print(lockout)
+									player1.vx = 0
+									data2 = "killed;"+str(player1.name)+";"+str(z.idd)+"\n"
+									data2 = data2.encode('UTF-8')
+									sock.sendto(data2,server_address)
+									deathtimeout = 0
 
 			for hitboxs in hitbox:
 				if (hitboxs.x) < (int(float(z.position.x))) and hitboxs.x + hitboxs.w +10 > int(float(z.position.x)):
@@ -316,7 +321,7 @@ while True:
 	if player1 is not None:
 
 		player1.physicsHandler(fps)
-		data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+"\n"
+		data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+";"+str(int(player1.hitpoints))+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 		if len(messages) > 0:

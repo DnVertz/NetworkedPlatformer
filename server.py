@@ -60,7 +60,7 @@ def sendPlayerLeave(player,addr,socket):
 	socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerPos(player,addr):
-	data = "pos;"+str(player.id)+";"+str(int(player.x))+";"+str(int(player.y))+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+"\n"
+	data = "pos;"+str(player.id)+";"+str(int(player.x))+";"+str(int(player.y))+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerMsg(socket,message,addr,name):
@@ -140,6 +140,7 @@ class Player:
 		self.room = 0
 		self.activeWeapon = 1
 		self.angle = 0
+		self.hitpoints = 100
 	def setPosition(self, x, y):
 		self.x = x
 		self.y = y
@@ -210,6 +211,8 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 					if len(split) > 5:
 						players[i].activeWeapon = split[5]
 						players[i].angle = split[6]
+						players[i].hitpoints = split[7]
+
 					for p in players:
 						if str(p.id) != str(players[i].id):
 							sendPlayerPos(players[i],p.addr)

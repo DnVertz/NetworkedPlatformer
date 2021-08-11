@@ -34,6 +34,7 @@ class actor:
 		self.ammo3 = 0
 		self.shootimeout = 10
 		self.weaontimeout = 10
+		self.hitpoints = 100
 		numbs = []
 		for word in self.index:
 			if word.isdigit():
@@ -256,6 +257,8 @@ class actor:
 
 		rects = pygame.Rect((self.x, self.y), (self.w, self.h))
 		rects2 = pygame.Rect((self.x, self.y), (112, 37))
+		rects3 = pygame.Rect((self.x-35, self.y-50), (100, 20))
+		rects4 = pygame.Rect((self.x-35, self.y-50), (1*self.hitpoints, 20))
 		rotated = pygame.transform.rotate(gunrect,self.angle)
 		rotatedrect = rotated.get_rect(center=rects.center)
 		textSurf = buttonfont.render(self.name, 1, (255,255,255))
@@ -265,6 +268,8 @@ class actor:
 
 		screen.blit(self.image, rects)
 		screen.blit(rotated, rotatedrect)
+		pygame.draw.rect(screen,(255, 0, 0),rects3)
+		pygame.draw.rect(screen,(0,255,0),rects4)
 		
 
 	def remove(self,position,speed):
