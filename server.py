@@ -180,11 +180,13 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 		if split[0] == 'join':
 			allow = True
 			for x in players:
+				print(x.name)
 				if x.name == split[1]:
 					msg = "False"
 					msg = msg.encode()
 					allow = False
 					socket.sendto(msg,self.client_address)
+
 
 			if allow == True:
 				msg = "True"

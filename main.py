@@ -72,20 +72,25 @@ while True:
 			sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
 			server_address = (str(connec[0]), int(connec[1]))
 			name = str(connec[2])
-			
-			msgs = str("join;"+name+"\n")
-			byte = msgs.encode()
-			sock.sendto(byte,server_address)
-			sock.settimeout(0.5)
-			initdata2,addr = sock.recvfrom(4096)
-			initdata2 = initdata2.decode('UTF-8')
-			print(initdata2)
 
-			if initdata2 == "True":
-				break
-			else:
-				title = "Name in use!!!!"
+			if not connec[2]:
+				title = "Choose a name"
 				state.state = "start"
+
+			else:
+				msgs = str("join;"+name+"\n")
+				byte = msgs.encode()
+				sock.sendto(byte,server_address)
+				sock.settimeout(0.5)
+				initdata2,addr = sock.recvfrom(4096)
+				initdata2 = initdata2.decode('UTF-8')
+				print(initdata2)
+
+				if initdata2 == "True":
+					break
+				else:
+					title = "Name in use!!!!"
+					state.state = "start"
 
 		except:
 			title = "Wrong IP/Port!!!!"
