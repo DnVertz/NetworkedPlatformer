@@ -60,7 +60,7 @@ def sendPlayerLeave(player,addr,socket):
 	socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerPos(player,addr):
-	data = "pos;"+str(player.id)+";"+str(int(player.x))+";"+str(int(player.y))+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+"\n"
+	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerMsg(socket,message,addr,name):

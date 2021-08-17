@@ -103,8 +103,8 @@ for p in split:
 	split2 = p.split(";")
 	if split2[0] == "init":
 		clientid = split2[1]
-		multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1],split2[4]))
-		player1 = actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1],split2[4])
+		multiplays.append(actor.actor(float(split2[2]), float(split2[3]),25 ,50 ,0,hitbox,split2[1],split2[4]))
+		player1 = actor.actor(float(split2[2]), float(split2[3]),25 ,50 ,0,hitbox,split2[1],split2[4])
 
 
 
@@ -133,7 +133,7 @@ def networkthread(clientid):
 			if split2[0] == "spawn":
 
 				if split2[1] is not clientid:
-					multiplays.append(actor.actor(int(split2[2]), int(split2[3]),25 ,50 ,0,hitbox,split2[1],split2[4]))
+					multiplays.append(actor.actor(float(split2[2]), float(split2[3]),25 ,50 ,0,hitbox,split2[1],split2[4]))
 
 			if split2[0] == "join":
 				if split2[1] is not clientid:
@@ -142,7 +142,7 @@ def networkthread(clientid):
 			if split2[0] == "pos":
 					for x in multiplays:
 						if x.index == split2[1]:
-							x.setPos(int(split2[2]),int(split2[3]))
+							x.setPos(float(split2[2]),float(split2[3]))
 				
 							x.setRoom(split2[4])
 							if len(split2) > 5:
@@ -234,6 +234,7 @@ def roomcheck(player1):
 		sock.sendto(data2,server_address)
 
 while True:
+	print(player1.x)
 	deathtimeout += 1
 
 	signal.signal(signal.SIGINT, signal_handler)
@@ -324,7 +325,7 @@ while True:
 	if player1 is not None:
 
 		player1.physicsHandler(fps)
-		data2 = "pos;"+str(clientid)+";"+str(int(player1.x))+";"+str(int(player1.y))+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+";"+str(int(player1.hitpoints))+"\n"
+		data2 = "pos;"+str(clientid)+";"+str(player1.x)+";"+str(player1.y)+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+";"+str(int(player1.hitpoints))+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 		if len(messages) > 0:
@@ -342,7 +343,7 @@ while True:
 
 		if player1.hitpoints < 100:
 			regen += 1
-			if regen > 70:
+			if regen > 175:
 				if player1.hitpoints + 10 > 100:
 					player1.hitpoints = 100
 				else:
