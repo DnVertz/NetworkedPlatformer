@@ -11,6 +11,7 @@ import os
 import signal
 import sys
 import bullet
+import createrooms
 import pygame.freetype
 all_bullets = []
 
@@ -37,29 +38,9 @@ deathmsgtimeout = 0
 
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 
-coll = None
-obstacles = None
-colli0 = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(300,500)],[(800,400),(500,400)],[(500,450),(60,125),(1,1,400,650)]
-colli1 = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(200,500)],[(500,450),(60,125)],[(800,400),(500,400)]
-coll0 = []
-coll1= []
+
 hitbox = []#loads the hitboxes
-rooms = []
-
-for hbox in colli0:
-	if len(hbox) > 2:
-		coll0.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
-	else:
-		coll0.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))
-
-rooms.append(coll0)
-for hbox in colli1:
-	if len(hbox) > 2:
-		coll1.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
-	else:
-		coll1.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))
-
-rooms.append(coll1)
+rooms = createrooms.create()
 
 #stores the level hitboxes... can and will be changed into a text file
 
