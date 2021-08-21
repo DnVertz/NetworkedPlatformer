@@ -26,6 +26,7 @@ clientid = 1
 deathtimeout = 0
 regen = 0
 
+
 title = "Platformer"
 player1 = None
 predict = False
@@ -36,19 +37,42 @@ deathmsgtimeout = 0
 
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 
-coll = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(300,500)],[(500,450),(60,125)],[(800,400),(500,400)]
-coll0 = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(300,500)],[(500,450),(60,125)],[(800,400),(500,400)]
-coll1 = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(200,500)],[(500,450),(60,125)],[(800,400),(500,400)]
-#stores the level hitboxes... can and will be changed into a text file
+coll = None
+obstacles = None
+colli0 = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(300,500)],[(800,400),(500,400)],[(500,450),(60,125),(1,1,400,650)]
+colli1 = [(0,0),(0,640)],[(1024,0),(1024,640)],[(0,640),(1024,640)],[(0,0),(1024,0)],[(0,500),(200,500)],[(500,450),(60,125)],[(800,400),(500,400)]
+coll0 = []
+coll1= []
 hitbox = []#loads the hitboxes
+rooms = []
+
+for hbox in colli0:
+	if len(hbox) > 2:
+		coll0.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
+	else:
+		coll0.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))
+
+rooms.append(coll0)
+for hbox in colli1:
+	if len(hbox) > 2:
+		coll1.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
+	else:
+		coll1.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))
+
+rooms.append(coll1)
+
+#stores the level hitboxes... can and will be changed into a text file
+
 multiplays = []#stores the actor class
 messages = []
 deathmessages = []
-for x in coll:
-	hitbox.append(hitboxes.hitboxes(x[0][0],x[0][1],x[1][0],x[1][1]))
+
+#for x in coll:
+	#hitbox.append(hitboxes.hitboxes(x[0][0],x[0][1],x[1][0],x[1][1]))
 
 state.state = "start"
 pygame.init()
+
 titlefont = pygame.font.Font(r'arial.ttf', 40)
 titlefont2 = pygame.font.Font(r'arial.ttf', 30)
 messagefont = pygame.font.Font(r'arial.ttf', 20)
@@ -84,7 +108,6 @@ while True:
 				sock.settimeout(0.5)
 				initdata2,addr = sock.recvfrom(4096)
 				initdata2 = initdata2.decode('UTF-8')
-				print(initdata2)
 
 				if initdata2 == "True":
 					break
@@ -98,7 +121,7 @@ while True:
 
 	pygame.display.flip()
 
-print("hello?")
+
 sock.settimeout(None)
 initdata,addr = sock.recvfrom(4096)
 
@@ -156,7 +179,7 @@ def networkthread(clientid):
 								x.hitpoints = int(split2[7])
 
 			if split2[0] == "leave":
-				print("x")
+
 				if split2[1] == clientid:
 					os._exit(1)
 				for x in multiplays:
@@ -180,9 +203,9 @@ def networkthread(clientid):
 
 			if split2[0] == "killed":
 				names = None
-				print(split2)
+
 				for p in multiplays:
-					print(p.index)
+
 					if str(p.index) == str(split2[2]):
 						names = p.name
 
@@ -196,7 +219,7 @@ thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
 
 def signal_handler(sig, frame):
-	print('You pressed Ctrl+C!')
+
 	data2 = "leave;"+str(clientid)+"\n"
 	data2 = data2.encode('UTF-8')
 	sock.sendto(data2,server_address)
@@ -239,7 +262,7 @@ def roomcheck(player1):
 		sock.sendto(data2,server_address)
 
 while True:
-	print(player1.x)
+
 	deathtimeout += 1
 
 	signal.signal(signal.SIGINT, signal_handler)
@@ -278,7 +301,7 @@ while True:
 									player1.y = 0
 									player1.hitpoints = 100
 									lockout = True
-									print(lockout)
+
 									player1.vx = 0
 									data2 = "killed;"+str(player1.name)+";"+str(z.idd)+"\n"
 									data2 = data2.encode('UTF-8')
@@ -304,11 +327,31 @@ while True:
 		char2 = titlefont2.render("Reloading", 1, (255,255,255))
 		screen.blit(char2, (315+lenofmsg2[0], 320))
 
-	coll = eval("coll" + str(player1.room))
 	hitbox = []
 
-	for x in coll:
-		hitbox.append(hitboxes.hitboxes(x[0][0],x[0][1],x[1][0],x[1][1]))
+	for x in rooms:
+		for continuity in x:
+			if continuity.move is not None:
+				continuity.x += continuity.move
+				if continuity.x > continuity.upper:
+					continuity.move = -continuity.move
+				elif continuity.x < continuity.lower:
+					continuity.move = -continuity.move
+
+	for hbox in rooms[player1.room]:
+		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
+		pygame.draw.rect(screen,(60,60,60),(hbox.x,hbox.y,hbox.w,hbox.h))
+
+	
+
+
+
+	
+
+	
+	
+	
+
 	player1.hitboxes = hitbox
 
 	if quitol == True:
@@ -320,9 +363,19 @@ while True:
 	for event in events:
 		if event.type == pygame.QUIT:
 			quitol = True
-	for x in coll:
-		if coll.index(x) >= 4:
-			pygame.draw.rect(screen,(60,60,60),(x[0][0],x[0][1],x[1][0],x[1][1]))
+	
+			
+
+	for box in hitbox:
+		if box.move is not 0:
+			print(box.move)
+			print("true")
+			box.x += box.move
+			print(box.x)
+			if (box.x) < (player1.x+player1.w) and box.x + box.w > player1.x:
+					if box.y + box.h> player1.y and box.y < (player1.y+player1.h):
+						player1.x += box.move
+					
 
 
 
@@ -345,6 +398,12 @@ while True:
 
 
 		player1.render(screen,clientid)
+		pygame.mouse.set_visible(0)
+		mouseX, mouseY = pygame.mouse.get_pos()
+		pygame.draw.line(screen, [0,0,0], (mouseX-10,mouseY), (mouseX+10,mouseY))
+		pygame.draw.line(screen, [0,0,0], (mouseX,mouseY-10), (mouseX,mouseY+10))
+		textSurf = messagefont.render("x: "+str(mouseX)+" y: "+str(mouseY), 1, (255,255,255))
+		screen.blit(textSurf, (mouseX-20, mouseY-20))
 
 		if player1.hitpoints < 100:
 			regen += 1
@@ -369,7 +428,7 @@ while True:
 
 			if ":" not in lst2:
 				if len(lst) <= 3:
-					print(lst)
+
 					message = lst[0]+" "+lst[1]+" "
 					message2 = lst[2]
 				else:
@@ -418,6 +477,8 @@ while True:
 				msgbox = False 
 			else:
 				msgbox = True
+
+
 
 		pygame.display.flip()
 sock.close()

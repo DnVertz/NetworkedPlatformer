@@ -173,14 +173,12 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 		data = data.decode()
 		#print(self.request)
 		split = data.split(";")
-		print(split)
 
 
 
 		if split[0] == 'join':
 			allow = True
 			for x in players:
-				print(x.name)
 				if x.name == split[1]:
 					msg = "False"
 					msg = msg.encode()

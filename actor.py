@@ -139,7 +139,6 @@ class actor:
 
 	def setAngle(self, Θ=0):
 			self.angle = Θ
-			print(self.angle)
 
 
 	def reload(self):
@@ -214,10 +213,7 @@ class actor:
 			aim = mouse - start
 			angles = aim.angle_to(pygame.math.Vector2(1, 0))
 			self.angle = int(angles)
-			print(self.angle)
-		else:
-			print(self.angle)
-		
+
 		if self.reloading == True:
 			self.reloadprog += 1
 
