@@ -296,7 +296,6 @@ while True:
 		rect.normalize()
 		pygame.draw.rect(screen,(60,60,60),rect)
 
-	print(hitbox)
 	if player1.all_bullets is not None:
 		#Check if bullets have collided 
 		for z in player1.all_bullets :
