@@ -77,7 +77,7 @@ while True:
 			pickle.dump(export, open("levels.pkl","ab"))
 			roomcounter += 1
 		objects = []
-		export = []
+		export = [[[0,0],[0,640]],[[1024,0],[1024,640]],[[0,640],[1024,640]],[[0,0],[1024,0]]]
 		counter = 0
 
 
