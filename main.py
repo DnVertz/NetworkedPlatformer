@@ -362,10 +362,20 @@ while True:
 
 	for hitbox in hitbox:
 		if hitbox.move is not 0:
-			if (hitbox.x) < (player1.x+player1.w) and hitbox.x + hitbox.w > player1.x:
+			if (hitbox.x+5) < (player1.x+player1.w) and hitbox.x-5 + hitbox.w > player1.x:
 				if hitbox.y + hitbox.h> player1.y and hitbox.y < (player1.y+player1.h):
-					player1.x += hitbox.move*2
-					print("4")
+					#player1.x += hitbox.move*2
+					player1.room = 0
+					player1.x = 4
+					player1.y = 0
+					lockout = True
+					print(lockout)
+					player1.vx = 0
+					player1.hitpoints = 100
+
+					data2 = "die;"+str(player1.name)+"\n"
+					data2 = data2.encode('UTF-8')
+					sock.sendto(data2,server_address)
 
 
 
