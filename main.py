@@ -289,6 +289,11 @@ while True:
 					elif continuity.x > continuity.lower:
 						continuity.move = -continuity.move
 
+	print(rooms)
+	print(rooms[0])
+	print(rooms[1])
+	if rooms[0] == rooms[1]:
+		print("true")
 	for hbox in rooms[player1.room]:
 		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
 		#pygame.draw.rect(screen,(60,60,60),(hbox.x,hbox.y,hbox.w,hbox.h))

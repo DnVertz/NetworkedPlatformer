@@ -55,6 +55,7 @@ while True:
 
 	if keys[pygame.K_RETURN] and counter > 10 and placed == False:
 		if roomcounter == 0:
+
 			for x in objects:
 				x[0][0] -= 100
 				x[0][1] -= 100
@@ -65,6 +66,7 @@ while True:
 			pickle.dump(export, open("levels.pkl","wb"))
 			roomcounter += 1
 		else:
+
 			for x in objects:
 				x[0][0] -= 100
 				x[0][1] -= 100
@@ -75,6 +77,7 @@ while True:
 			pickle.dump(export, open("levels.pkl","ab"))
 			roomcounter += 1
 		objects = []
+		export = []
 		counter = 0
 
 
@@ -113,7 +116,7 @@ while True:
 
 
 	if placed == True:
-		print(objects[len(objects)-1][1][0])
+
 		(objects[len(objects)-1])[1][0] = mouseX-oldx
 		(objects[len(objects)-1])[1][1] = mouseY-oldy
 
