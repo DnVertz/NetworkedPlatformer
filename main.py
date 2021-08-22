@@ -256,6 +256,47 @@ while True:
 	lenofmsg3 = titlefont2.size(roomsg2)
 
 
+	
+						
+
+	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
+	screen.blit(char1, (1024-lenofmsg[0] , 10))
+	char3 = titlefont2.render((roomsg2), 1, (255,255,255))
+	screen.blit(char3, (1020-lenofmsg3[0] , 50))
+
+
+
+	if player1.reloading == True:
+		lenofmsg2 = titlefont2.size("Reloading")
+		char2 = titlefont2.render("Reloading", 1, (255,255,255))
+		screen.blit(char2, (315+lenofmsg2[0], 320))
+
+	hitbox = []
+
+	for x in rooms:
+		for continuity in x:
+			if continuity.move is not None:
+				if continuity.upper > continuity.lower:
+					continuity.x += continuity.move
+					if continuity.x > continuity.upper:
+						continuity.move = -continuity.move
+					elif continuity.x < continuity.lower:
+						continuity.move = -continuity.move
+				else:
+					continuity.x += continuity.move
+					if continuity.x < continuity.upper:
+						continuity.move = -continuity.move
+					elif continuity.x > continuity.lower:
+						continuity.move = -continuity.move
+
+	for hbox in rooms[player1.room]:
+		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
+		#pygame.draw.rect(screen,(60,60,60),(hbox.x,hbox.y,hbox.w,hbox.h))
+		rect = pygame.Rect(hbox.x,hbox.y,hbox.w,hbox.h)
+		rect.normalize()
+		pygame.draw.rect(screen,(60,60,60),rect)
+
+	print(hitbox)
 	if player1.all_bullets is not None:
 		#Check if bullets have collided 
 		for z in player1.all_bullets :
@@ -289,39 +330,11 @@ while True:
 									sock.sendto(data2,server_address)
 									deathtimeout = 0
 
-			for hitboxs in hitbox:
-				if (hitboxs.x) < (int(float(z.position.x))) and hitboxs.x + hitboxs.w +10 > int(float(z.position.x)):
-					if hitboxs.y + hitboxs.h+10> int(float(z.position.y)) and hitboxs.y< (int(float(z.position.y))) :
+			for hbox in hitbox:
+				if (hbox.x) < (int(float(z.position.x))) and hbox.x + hbox.w +10 > int(float(z.position.x)):
+					if hbox.y + hbox.h+10> int(float(z.position.y)) and hbox.y< (int(float(z.position.y))) :
 						if z in player1.all_bullets:
 							player1.all_bullets.remove(z)
-						
-
-	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
-	screen.blit(char1, (1024-lenofmsg[0] , 10))
-	char3 = titlefont2.render((roomsg2), 1, (255,255,255))
-	screen.blit(char3, (1020-lenofmsg3[0] , 50))
-
-
-
-	if player1.reloading == True:
-		lenofmsg2 = titlefont2.size("Reloading")
-		char2 = titlefont2.render("Reloading", 1, (255,255,255))
-		screen.blit(char2, (315+lenofmsg2[0], 320))
-
-	hitbox = []
-
-	for x in rooms:
-		for continuity in x:
-			if continuity.move is not None:
-				continuity.x += continuity.move
-				if continuity.x > continuity.upper:
-					continuity.move = -continuity.move
-				elif continuity.x < continuity.lower:
-					continuity.move = -continuity.move
-
-	for hbox in rooms[player1.room]:
-		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
-		pygame.draw.rect(screen,(60,60,60),(hbox.x,hbox.y,hbox.w,hbox.h))
 
 	
 
@@ -347,16 +360,12 @@ while True:
 	
 			
 
-	for box in hitbox:
-		if box.move is not 0:
-			print(box.move)
-			print("true")
-			box.x += box.move
-			print(box.x)
-			if (box.x) < (player1.x+player1.w) and box.x + box.w > player1.x:
-					if box.y + box.h> player1.y and box.y < (player1.y+player1.h):
-						player1.x += box.move
-					
+	for hitbox in hitbox:
+		if hitbox.move is not 0:
+			if (hitbox.x) < (player1.x+player1.w) and hitbox.x + hitbox.w > player1.x:
+				if hitbox.y + hitbox.h> player1.y and hitbox.y < (player1.y+player1.h):
+					player1.x += hitbox.move*2
+					print("4")
 
 
 

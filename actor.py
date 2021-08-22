@@ -82,9 +82,9 @@ class actor:
 
 	def inBounds(self, x, y):
 			for hitbox in self.hitboxes:
-				if (hitbox.x) < (x+self.w) and hitbox.x + hitbox.w > x:
-					if hitbox.y + hitbox.h> y and hitbox.y < (y+self.h):
-						return True	
+					if (hitbox.x) < (x+self.w) and hitbox.x + hitbox.w > x:
+						if hitbox.y + hitbox.h> y and hitbox.y < (y+self.h):
+							return True	
 			return False
 
 	
