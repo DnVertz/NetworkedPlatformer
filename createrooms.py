@@ -1,4 +1,5 @@
 import hitboxes
+import pickle
 def create():
 	roomcount = 0
 	coll = None
@@ -8,10 +9,28 @@ def create():
 	coll0 = []
 	coll1= []
 	rooms = []
-	coll = eval("coll" + str(player1.room))
-	 eval("coll" + str(player1.room))
+	#coll = eval("coll" + str(player1.room))
 
-	for hbox in colli0:
+	data = []
+	with open('levels.pkl', 'rb') as fr:
+		try:
+			while True:
+				data.append(pickle.load(fr))
+		except EOFError:
+			pass
+
+
+	for i in data:
+		x = []
+		for hbox in i:
+			if len(hbox) > 2:
+				x.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
+			else:
+				x.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))
+		rooms.append(x)
+	
+
+	"""for hbox in colli0:
 		if len(hbox) > 2:
 			coll0.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
 		else:
@@ -24,6 +43,6 @@ def create():
 			coll1.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
 		else:
 			coll1.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))
-	rooms.append(coll1)
+	rooms.append(coll1)"""
 
 	return rooms

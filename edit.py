@@ -17,19 +17,11 @@ currenth = None
 placed = False
 specify = False
 counter = 0
+roomcounter= 0
 while True:
 	events = pygame.event.get()
 	for event in events:
 		if event.type == pygame.QUIT:
-			for x in objects:
-				x[0][0] -= 100
-				x[0][1] -= 100
-				x[2][2] -= 100
-				x[2][3] -= 100
-				if x[1][0] > 0 and x[1][1] > 0:
-					export.append(x)
-			print(export)
-			pickle.dump(export, open("levels.pkl","ab"))
 			os._exit(1)
 	pygame.mouse.set_visible(0)
 	screen.fill((0,0,0))
@@ -60,6 +52,33 @@ while True:
 			placed = False
 			objects.pop()
 			counter = 0
+
+	if keys[pygame.K_RETURN] and counter > 10 and placed == False:
+		if roomcounter == 0:
+			for x in objects:
+				x[0][0] -= 100
+				x[0][1] -= 100
+				x[2][2] -= 100
+				x[2][3] -= 100
+				if x[1][0] > 0 and x[1][1] > 0:
+					export.append(x)
+			pickle.dump(export, open("levels.pkl","wb"))
+			roomcounter += 1
+		else:
+			for x in objects:
+				x[0][0] -= 100
+				x[0][1] -= 100
+				x[2][2] -= 100
+				x[2][3] -= 100
+				if x[1][0] > 0 and x[1][1] > 0:
+					export.append(x)
+			pickle.dump(export, open("levels.pkl","ab"))
+			roomcounter += 1
+		objects = []
+		counter = 0
+
+
+
 
 	counter += 1
 
