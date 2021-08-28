@@ -1,3 +1,4 @@
+#idea load hitbox data into server handle it like clients and transmit the telemtry for the hitbox positions to the clients
 import pygame 
 import os
 import pickle 

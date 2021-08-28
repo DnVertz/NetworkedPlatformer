@@ -26,6 +26,8 @@ quitol = False
 clientid = 1
 deathtimeout = 0
 regen = 0
+servertick = 0
+tickreverse = "False"
 
 
 title = "Platformer"
@@ -127,6 +129,8 @@ def networkthread(clientid):
 	global msgtimeout
 	global kicked
 	global player1
+	global servertick
+	global tickreverse
 	while True:
 		try:
 			data,addr2 = sock.recvfrom(4096)
@@ -166,6 +170,11 @@ def networkthread(clientid):
 				for x in multiplays:
 					if x.index == split2[1]:
 						multiplays.remove(x)
+
+			if split2[0] == "tick":
+				#print(split2)
+				servertick = int(split2[1])
+				tickreverse = split2[2]
 
 			if split2[0] == "msg":
 				messages.append(split2[1]+": "+split2[2])
@@ -243,6 +252,7 @@ def roomcheck(player1):
 		sock.sendto(data2,server_address)
 
 while True:
+	#print(servertick)
 
 	deathtimeout += 1
 
@@ -273,7 +283,7 @@ while True:
 
 	hitbox = []
 
-	for x in rooms:
+	"""for x in rooms:
 		for continuity in x:
 			if continuity.move is not None:
 				if continuity.upper > continuity.lower:
@@ -287,13 +297,13 @@ while True:
 					if continuity.x < continuity.upper:
 						continuity.move = -continuity.move
 					elif continuity.x > continuity.lower:
-						continuity.move = -continuity.move
+						continuity.move = -continuity.move"""
+	
 
-	print(rooms)
-	print(rooms[0])
-	print(rooms[1])
-	if rooms[0] == rooms[1]:
-		print("true")
+
+
+
+
 	for hbox in rooms[player1.room]:
 		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
 		#pygame.draw.rect(screen,(60,60,60),(hbox.x,hbox.y,hbox.w,hbox.h))
@@ -482,6 +492,21 @@ while True:
 			else:
 				msgbox = True
 
+		
+		for y in rooms:
+			for continuity in y:
+				if continuity.move is not 0:
+					print(tickreverse)
+			
+					
+						
+					if tickreverse == "False":
+						continuity.x = continuity.upper - int(((continuity.upper - continuity.lower)/1000)*servertick)
+
+					else:
+						continuity.x = continuity.lower + int(((continuity.upper - continuity.lower)/1000)*servertick)
+			
+					
 
 
 		pygame.display.flip()

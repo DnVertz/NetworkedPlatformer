@@ -1,6 +1,7 @@
 from threading import Thread
 from threading import Lock
 import time
+import pygame
 
 
 import uuid, asyncio
@@ -14,6 +15,8 @@ HOSTname = str(s.getsockname()[0])
 s.close()
 PORT = 8008
 HOST = ''
+tick = 0
+reverse = False
 players = []
 bullets = []
 #players_lock = threading.Lock()
@@ -59,6 +62,11 @@ def sendPlayerLeave(player,addr,socket):
 	data = "leave;"+str(player.id)+"\n"
 	socket.sendto(data.encode('UTF-8'),addr)
 
+def sendPlayerTick(player,addr,socket,tick,rev):
+	data = "tick;"+str(tick)+";"+str(rev)+"\n"
+	socket.sendto(data.encode('UTF-8'),addr)
+
+
 def sendPlayerPos(player,addr):
 	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
@@ -80,34 +88,35 @@ def sendPlayerTest(socket,addr):
 	socket.sendto(data.encode('UTF-8'),addr)
 
 def timeout():
+	clock = pygame.time.Clock() 
+	FPS = 60
+	
 	while True:
+		fps = clock.tick(FPS)
+
+		global tick
 		global players
-		try:
-			for i in range(len(players)):
+		global reverse
+		print(reverse)
+		if tick < 1000:
+			tick += 1
 
-				if players[i].timeout == 60: 
-					for p in players:
-						sendPlayerLeave(players[i],p.addr,p.socket)
-					players.remove(players[i])
-					break
-				else:
-					
-					pos = (players[i].x,players[i].y)
-					time.sleep(1)
-					pos2 = (players[i].x,players[i].y)
-					if pos == pos2:
-						players[i].timeout += 1
-					else:
-						players[i].timeout = 0
 
-				
-		except:
-			pass
+		else:
+			if reverse == True:
+				reverse = False
+			else:
+				reverse = True
+
+			tick = 0
+		for p in players:
+			sendPlayerTick(p,p.addr,p.socket,tick,reverse)
+			
 
 
 
 thr = Thread(target = timeout,args =())
-#thr.start()
+thr.start()
 
 class PositionUpdate:
 	def __init__(self, pid, x: int, y: int):
@@ -263,5 +272,6 @@ async def main():
     server = socketserver.UDPServer((HOST,8008), MyUDPHandler)
     print(f'Serving on '+str(HOSTname)+" "+str(8008))
     server.serve_forever()
+    
 
 asyncio.run(main())
