@@ -283,33 +283,31 @@ while True:
 
 	hitbox = []
 
-	"""for x in rooms:
-		for continuity in x:
-			if continuity.move is not None:
-				if continuity.upper > continuity.lower:
-					continuity.x += continuity.move
-					if continuity.x > continuity.upper:
-						continuity.move = -continuity.move
-					elif continuity.x < continuity.lower:
-						continuity.move = -continuity.move
+
+
+
+	for y in rooms:
+		for continuity in y:
+			if continuity.move is not 0:
+				print(tickreverse)
+			
+				if tickreverse == "False":
+					continuity.x = continuity.upper - (int(((continuity.upper - continuity.lower)/1000)*servertick))
+
 				else:
-					continuity.x += continuity.move
-					if continuity.x < continuity.upper:
-						continuity.move = -continuity.move
-					elif continuity.x > continuity.lower:
-						continuity.move = -continuity.move"""
+					continuity.x = continuity.lower + (int(((continuity.upper - continuity.lower)/1000)*servertick))
+
 	
-
-
-
-
-
+	
 	for hbox in rooms[player1.room]:
 		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
 		#pygame.draw.rect(screen,(60,60,60),(hbox.x,hbox.y,hbox.w,hbox.h))
 		rect = pygame.Rect(hbox.x,hbox.y,hbox.w,hbox.h)
 		rect.normalize()
 		pygame.draw.rect(screen,(60,60,60),rect)
+
+	
+
 
 	if player1.all_bullets is not None:
 		#Check if bullets have collided 
@@ -493,18 +491,7 @@ while True:
 				msgbox = True
 
 		
-		for y in rooms:
-			for continuity in y:
-				if continuity.move is not 0:
-					print(tickreverse)
-			
-					
-						
-					if tickreverse == "False":
-						continuity.x = continuity.upper - int(((continuity.upper - continuity.lower)/1000)*servertick)
-
-					else:
-						continuity.x = continuity.lower + int(((continuity.upper - continuity.lower)/1000)*servertick)
+		
 			
 					
 

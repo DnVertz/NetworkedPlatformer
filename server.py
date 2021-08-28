@@ -89,7 +89,7 @@ def sendPlayerTest(socket,addr):
 
 def timeout():
 	clock = pygame.time.Clock() 
-	FPS = 60
+	FPS = 120
 	
 	while True:
 		fps = clock.tick(FPS)
@@ -97,7 +97,7 @@ def timeout():
 		global tick
 		global players
 		global reverse
-		print(reverse)
+
 		if tick < 1000:
 			tick += 1
 

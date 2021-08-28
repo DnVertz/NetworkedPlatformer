@@ -11,7 +11,7 @@ def create():
 	rooms = []
 	#coll = eval("coll" + str(player1.room))
 
-	data = []
+	data = [[0,0],[0,640]],[[1024,0],[1024,640]],[[0,640],[1024,640]],[[0,0],[1024,0]]
 	with open('levels.pkl', 'rb') as fr:
 		try:
 			while True:
