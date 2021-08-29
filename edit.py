@@ -106,6 +106,7 @@ while True:
 		pygame.display.flip()
 
 	else:
+		save()
 		#print(objects)
 		pygame.mouse.set_visible(0)
 		screen.fill((41,41,41))
@@ -127,8 +128,16 @@ while True:
 								#rect2 = pygame.Rect((x[0][0],x[0][1],x[2][3]+x[0][0],10))
 								#pygame.draw.rect(screen,(255,0,0),rect2)
 								pygame.draw.rect(screen,(255,0,0),rect)
+								
+										
+
+							elif x[2][0] == 2:
+								pygame.draw.rect(screen,(255,0,0),rect)
+
+								
 							else:
 								pygame.draw.rect(screen,(60,60,60),rect)
+
 						except:
 							pygame.draw.rect(screen,(60,60,60),rect)
 			except:
@@ -148,11 +157,22 @@ while True:
 		if keys[pygame.K_BACKSPACE] and counter > 10:
 			placed = False
 			if append == True:
-				if len(objects[roomcounter]) >= 1:
-					objects[roomcounter].pop()
-					counter = 0
+				for hbox in objects[roomcounter]:
+					if (hbox[0][0]) < (int(float(mouseX))) and hbox[0][0] + hbox[1][0] > int(float(mouseX)):
+						if hbox[0][1] + hbox[1][1]> int(float(mouseY)) and hbox[0][1]< (int(float(mouseY))):
+							if len(objects[roomcounter]) >= 1:
+								if hbox[2][0] ==1:
+									x = objects[roomcounter].index(hbox)
+									print(x)
+									objects[roomcounter].remove(hbox)
+									objects[roomcounter].remove(objects[roomcounter][x])
+								else:
+									objects[roomcounter].remove(hbox)
+
+						counter = 0
 			if append == False:
 				if len(objects) >= 1:
+
 					objects.pop()
 					counter = 0
 
@@ -180,74 +200,14 @@ while True:
 		if keys[pygame.K_RSHIFT] and counter > 10:
 			placed = False
 			if append == True:
-				if roomcounter - 1 >= 0:
-					roomcounter -= 1
+
+				print(len(objects))
+				print(roomcounter)
+				if len(objects) -1 > 0:
+					if roomcounter + 1 == len(objects):
+						roomcounter -= 1
 					objects.pop()
 					counter = 0
-
-
-
-				
-
-		"""if keys[pygame.K_RETURN] and counter > 10 and placed == False:
-			if append == False:
-				if roomcounter == 0:
-
-					for x in objects:
-						x[0][0] -= 100
-						x[0][1] -= 100
-						x[2][2] -= 100
-						x[2][3] -= 100
-						if x[1][0] > 0 and x[1][1] > 0:
-							export.append(x)
-					pickle.dump(export, open("levels.pkl","wb"))
-					roomcounter += 1
-				else:
-
-					for x in objects:
-						x[0][0] -= 100
-						x[0][1] -= 100
-						x[2][2] -= 100
-						x[2][3] -= 100
-						if x[1][0] > 0 and x[1][1] > 0:
-							export.append(x)
-					pickle.dump(export, open("levels.pkl","ab"))
-					roomcounter += 1
-				objects = []
-				export = []
-				counter = 0
-
-			if append == True:
-				print(objects)
-				for x in objects[roomcounter]:
-					x[0][0] -= 100
-					x[0][1] -= 100
-					x[2][2] -= 100
-					x[2][3] -= 100
-					if x[1][0] > 0 and x[1][1] > 0:
-						export.append(x)
-
-				
-				
-				if roomcounter == 0:
-
-					pickle.dump(export, open("levels.pkl","wb"))
-				else:
-					pickle.dump(export, open("levels.pkl","ab"))
-
-				#roomcounter += 1
-				counter = 0
-				export = []
-
-				for x in objects[roomcounter]:
-					x[0][0] += 100
-					x[0][1] += 100
-					x[2][2] += 100
-					x[2][3] += 100"""
-
-
-
-
 
 
 
@@ -267,7 +227,6 @@ while True:
 				if placed == True and counter > 10:
 					placed = False
 					counter = 0
-					save()
 
 
 
@@ -285,9 +244,8 @@ while True:
 
 		if  mouse_buttons[2] == True and specify == True and counter > 10:
 				specify = False
-				objects.pop()
+				#objects[roomcounter].pop()
 				counter = 0
-
 
 
 
@@ -301,6 +259,7 @@ while True:
 		if specify == True:
 			if append == True:
 				(objects[roomcounter][len(objects[roomcounter])-1])[1][0] = mouseX-oldx
+				(objects[roomcounter][len(objects[roomcounter])-1])[2][0] = 2
 				(objects[roomcounter][len(objects[roomcounter])-2])[2][0] = 1
 				(objects[roomcounter][len(objects[roomcounter])-2])[2][1] = 1
 				(objects[roomcounter][len(objects[roomcounter])-2])[2][2] = oldx

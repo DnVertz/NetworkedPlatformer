@@ -26,8 +26,10 @@ def create():
 			x.append(z)
 
 		for hbox in x:
+
 			if len(hbox) > 2:
-				y.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
+				if hbox[2][0] is not 2:
+					y.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
 			else:
 				y.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))
 		rooms.append(y)
