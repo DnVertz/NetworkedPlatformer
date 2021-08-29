@@ -25,11 +25,47 @@ append = False
 roomcounter= 0
 state = "start"
 
+def save():
+
+	global objects
+	global roomcounter
+	export = []
+	for y in objects:
+		for x in y:
+			x[0][0] -= 100
+			x[0][1] -= 100
+			x[2][2] -= 100
+			x[2][3] -= 100
+			if x[1][0] > 0 and x[1][1] > 0:
+				export.append(x)
+
+
+	pickle.dump(objects, open("levels.pkl","wb"))
+	
+	"""
+	
+	if roomcounter == 0:
+
+		pickle.dump(export, open("levels.pkl","wb"))
+	else:
+		pickle.dump(export, open("levels.pkl","ab"))
+
+		#roomcounter += 1"""
+
+	
+	for y in objects:
+		for x in y:
+			x[0][0] += 100
+			x[0][1] += 100
+			x[2][2] += 100
+			x[2][3] += 100
+
 
 while True:
 	
 
 
+	
 	events = pygame.event.get()
 	for event in events:
 		if event.type == pygame.QUIT:
@@ -50,19 +86,18 @@ while True:
 						objects.append(pickle.load(fr))
 				except EOFError:
 					pass
+			objects = objects[0]
 			if objects is not []:
 				print(objects)
 				append = True
 				for y in objects:
 					for x in y:
+						
+						x.append([0,0,0,0])
 						x[0][0] += 100
 						x[0][1] += 100
-						print(len(x))
-						if len(x) > 2:
-							x[2][2] += 100
-							x[2][3] += 100
-						else:
-							x.append([0,0,0,0])
+						x[2][2] += 100
+						x[2][3] += 100
 
 
 
@@ -134,6 +169,20 @@ while True:
 			if append == True:
 				if roomcounter - 1 >= 0:
 					roomcounter -= 1
+					counter = 0
+
+		if keys[pygame.K_RETURN] and counter > 10:
+			placed = False
+			if append == True:
+				roomcounter += 1
+				counter = 0
+
+		if keys[pygame.K_RSHIFT] and counter > 10:
+			placed = False
+			if append == True:
+				if roomcounter - 1 >= 0:
+					roomcounter -= 1
+					objects.pop()
 					counter = 0
 
 
@@ -218,31 +267,8 @@ while True:
 				if placed == True and counter > 10:
 					placed = False
 					counter = 0
-					for x in objects[roomcounter]:
-						x[0][0] -= 100
-						x[0][1] -= 100
-						x[2][2] -= 100
-						x[2][3] -= 100
-						if x[1][0] > 0 and x[1][1] > 0:
-							export.append(x)
+					save()
 
-					
-					
-					if roomcounter == 0:
-
-						pickle.dump(export, open("levels.pkl","wb"))
-					else:
-						pickle.dump(export, open("levels.pkl","ab"))
-
-					#roomcounter += 1
-					counter = 0
-					export = []
-
-					for x in objects[roomcounter]:
-						x[0][0] += 100
-						x[0][1] += 100
-						x[2][2] += 100
-						x[2][3] += 100
 
 
 
