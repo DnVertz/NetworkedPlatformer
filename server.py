@@ -4,6 +4,7 @@ import time
 import pygame
 
 
+
 import uuid, asyncio
 import socket
 import socketserver
@@ -13,7 +14,7 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 8008))
 HOSTname = str(s.getsockname()[0])
 s.close()
-PORT = 8008
+PORT = 8888
 HOST = ''
 tick = 0
 reverse = False
@@ -269,8 +270,8 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 
 
 async def main():
-    server = socketserver.UDPServer((HOST,8008), MyUDPHandler)
-    print(f'Serving on '+str(HOSTname)+" "+str(8008))
+    server = socketserver.UDPServer((HOST,8888), MyUDPHandler)
+    print(f'Serving on IP: '+str(HOSTname)+" Port: "+str(8888))
     server.serve_forever()
     
 

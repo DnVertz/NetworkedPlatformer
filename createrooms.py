@@ -19,7 +19,7 @@ def create():
 				rooms2.append(pickle.load(fr))
 		except EOFError:
 			pass
-	print(rooms2[0][0])
+
 	for x in rooms2[0]:
 		y = []
 		for z in data:
@@ -28,7 +28,7 @@ def create():
 		for hbox in x:
 
 			if len(hbox) > 2:
-				if hbox[2][0] is not 2:
+				if hbox[2][0] != 2:
 					y.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1],hbox[2][1],hbox[2][2],hbox[2][3]))
 			else:
 				y.append(hitboxes.hitboxes(hbox[0][0],hbox[0][1],hbox[1][0],hbox[1][1]))

@@ -216,15 +216,16 @@ def signal_handler(sig, frame):
 	os._exit(1)
 
 def roomcheck(player1):
+	global rooms
 
 	global lockout
 	if player1.x > 995:
-		if player1.room < 1:
+		if player1.room < len(rooms)-1:
 			player1.room += 1
 			player1.x = 4
 			player1.y = 0
 			lockout = True
-			print(lockout)
+
 			player1.vx = 0
 			deathtimeout = 0
 			
@@ -234,7 +235,7 @@ def roomcheck(player1):
 			player1.x = 993
 			player1.y = 0
 			lockout = True
-			print(lockout)
+
 			player1.vx = 0
 			deathtimeout = 0
 
@@ -243,7 +244,7 @@ def roomcheck(player1):
 		player1.x = 4
 		player1.y = 0
 		lockout = True
-		print(lockout)
+
 		player1.vx = 0
 		player1.hitpoints = 100
 
@@ -288,8 +289,8 @@ while True:
 
 	for y in rooms:
 		for continuity in y:
-			if continuity.move is not 0:
-				print(tickreverse)
+			if continuity.move != 0:
+
 			
 				if tickreverse == "False":
 					continuity.x = continuity.upper - (int(((continuity.upper - continuity.lower)/1000)*servertick))
@@ -351,13 +352,6 @@ while True:
 	
 
 
-
-	
-
-	
-	
-	
-
 	player1.hitboxes = hitbox
 
 	if quitol == True:
@@ -373,7 +367,7 @@ while True:
 			
 
 	for hitbox in hitbox:
-		if hitbox.move is not 0:
+		if hitbox.move != 0:
 			if (hitbox.x+5) < (player1.x+player1.w) and hitbox.x-5 + hitbox.w > player1.x:
 				if hitbox.y + hitbox.h> player1.y and hitbox.y < (player1.y+player1.h):
 					#player1.x += hitbox.move*2
@@ -381,7 +375,7 @@ while True:
 					player1.x = 4
 					player1.y = 0
 					lockout = True
-					print(lockout)
+
 					player1.vx = 0
 					player1.hitpoints = 100
 
