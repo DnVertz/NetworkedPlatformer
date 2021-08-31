@@ -210,9 +210,9 @@ thr.start()
 
 def signal_handler(sig, frame):
 
-	data2 = "leave;"+str(clientid)+"\n"
+	"""data2 = "leave;"+str(clientid)+"\n"
 	data2 = data2.encode('UTF-8')
-	sock.sendto(data2,server_address)
+	sock.sendto(data2,server_address)"""
 	os._exit(1)
 
 def roomcheck(player1):

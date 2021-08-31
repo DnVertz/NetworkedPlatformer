@@ -98,6 +98,12 @@ def timeout():
 		global tick
 		global players
 		global reverse
+		global bullets
+
+		if len(bullets) > 50:
+			bullets.remove(bullets[1])
+
+
 
 		if tick < 1000:
 			tick += 1
@@ -112,6 +118,13 @@ def timeout():
 			tick = 0
 		for p in players:
 			sendPlayerTick(p,p.addr,p.socket,tick,reverse)
+			p.timeout += 1
+			print(p.timeout)
+			if p.timeout > 300:
+				for x in players:
+					sendPlayerLeave(p,x.addr,x.socket)
+				players.remove(p)
+
 			
 
 
@@ -218,6 +231,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 					players[i].x = split[2]
 					players[i].y = split[3]
 					players[i].room = split[4]
+					players[i].timeout = 0
 					if len(split) > 5:
 						players[i].activeWeapon = split[5]
 						players[i].angle = split[6]
@@ -259,8 +273,8 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 				#if bullet.addr is not p.addr:
 				sendBulletSpawn(split[1],split[2],split[3],split[4],split[5],p.addr,socket,split[6],split[7])
 
-		if len(bullets) > 50:
-			bullets.remove(bullets[1])
+
+		
 
 
 
