@@ -402,8 +402,6 @@ while True:
 		mouseX, mouseY = pygame.mouse.get_pos()
 		pygame.draw.line(screen, [0,0,0], (mouseX-10,mouseY), (mouseX+10,mouseY))
 		pygame.draw.line(screen, [0,0,0], (mouseX,mouseY-10), (mouseX,mouseY+10))
-		textSurf = messagefont.render("x: "+str(mouseX)+" y: "+str(mouseY), 1, (255,255,255))
-		screen.blit(textSurf, (mouseX-20, mouseY-20))
 
 		if player1.hitpoints < 100:
 			regen += 1
