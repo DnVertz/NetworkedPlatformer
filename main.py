@@ -28,8 +28,6 @@ deathtimeout = 0
 regen = 0
 servertick = 0
 tickreverse = "False"
-
-
 title = "Platformer"
 player1 = None
 predict = False
@@ -49,9 +47,6 @@ hitbox = []#loads the hitboxes
 multiplays = []#stores the actor class
 messages = []
 deathmessages = []
-
-#for x in coll:
-	#hitbox.append(hitboxes.hitboxes(x[0][0],x[0][1],x[1][0],x[1][1]))
 
 state.state = "start"
 pygame.init()
@@ -75,7 +70,7 @@ while True:
 			connec = start
 			state.state = "joincheck"
 	else:
-		#try: 
+		try: 
 			sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
 			server_address = (str(connec[0]), int(connec[1]))
 			name = str(connec[2])
@@ -91,9 +86,8 @@ while True:
 				sock.settimeout(0.5)
 				initdata2,addr = sock.recvfrom(4096)
 				initdata2 = initdata2.decode('UTF-8')
-				print(initdata2)
 				split = initdata2.split(";")
-				print(initdata2[0])
+
 
 				if split[0] == "True":
 					rooms = createrooms.create(split[1])
@@ -103,9 +97,9 @@ while True:
 					title = "Name in use!!!!"
 					state.state = "start"
 
-		#except:
-			#title = "Wrong IP/Port!!!!"
-			#state.state = "start"
+		except:
+			title = "Wrong IP/Port!!!!"
+			state.state = "start"
 
 	pygame.display.flip()
 
@@ -199,13 +193,10 @@ def networkthread(clientid):
 
 			if split2[0] == "killed":
 				names = None
-
 				for p in multiplays:
 
 					if str(p.index) == str(split2[2]):
 						names = p.name
-
-
 				messages.append(names +" has killed "+split2[1])
 				msgtimeout = 0
 
@@ -215,7 +206,6 @@ thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
 
 def signal_handler(sig, frame):
-
 	data2 = "leave;"+str(clientid)+"\n"
 	data2 = data2.encode('UTF-8')
 	sock.sendto(data2,server_address)
@@ -223,7 +213,6 @@ def signal_handler(sig, frame):
 
 def roomcheck(player1):
 	global rooms
-
 	global lockout
 	if player1.x > 995:
 		if player1.room < len(rooms)-1:
@@ -231,7 +220,6 @@ def roomcheck(player1):
 			player1.x = 4
 			player1.y = 0
 			lockout = True
-
 			player1.vx = 0
 			deathtimeout = 0
 			
@@ -241,7 +229,6 @@ def roomcheck(player1):
 			player1.x = 993
 			player1.y = 0
 			lockout = True
-
 			player1.vx = 0
 			deathtimeout = 0
 
@@ -250,27 +237,17 @@ def roomcheck(player1):
 		player1.x = 4
 		player1.y = 0
 		lockout = True
-
 		player1.vx = 0
 		player1.hitpoints = 100
-
 		data2 = "die;"+str(player1.name)+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 
 while True:
-	#print(servertick)
-
 	deathtimeout += 1
-
 	signal.signal(signal.SIGINT, signal_handler)
 	roomcheck(player1)
-
 	screen.fill((128,128,128))
-
-
-
-
 	if player1.reloading == True:
 		lenofmsg2 = titlefont2.size("Reloading")
 		char2 = titlefont2.render("Reloading", 1, (255,255,255))
@@ -284,8 +261,6 @@ while True:
 	for y in rooms:
 		for continuity in y:
 			if continuity.move != 0:
-
-			
 				if tickreverse == "False":
 					continuity.x = continuity.upper - (int(((continuity.upper - continuity.lower)/1000)*servertick))
 
@@ -296,12 +271,9 @@ while True:
 	
 	for hbox in rooms[player1.room]:
 		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
-		#pygame.draw.rect(screen,(60,60,60),(hbox.x,hbox.y,hbox.w,hbox.h))
 		rect = pygame.Rect(hbox.x,hbox.y,hbox.w,hbox.h)
 		rect.normalize()
 		pygame.draw.rect(screen,(60,60,60),rect)
-
-	
 
 
 	if player1.all_bullets is not None:
@@ -313,7 +285,6 @@ while True:
 
 			if int(z.room) == player1.room:
 				pygame.draw.circle(screen, (255,255,255), (pos_x, pos_y),int(z.size))
-
 
 			if (player1.x) < (pos_x+10) and player1.x + player1.w > pos_x:
 				if player1.y + player1.h > pos_y and player1.y < (pos_y+10):
@@ -343,11 +314,7 @@ while True:
 						if z in player1.all_bullets:
 							player1.all_bullets.remove(z)
 
-	
-
-
 	player1.hitboxes = hitbox
-
 	if quitol == True:
 		data2 = "leave;"+str(clientid)+"\n"
 		data2 = data2.encode('UTF-8')
@@ -358,8 +325,6 @@ while True:
 		if event.type == pygame.QUIT:
 			quitol = True
 	
-			
-
 	for hitbox in hitbox:
 		if hitbox.move != 0:
 			if (hitbox.x+5) < (player1.x+player1.w) and hitbox.x-5 + hitbox.w > player1.x:
@@ -377,11 +342,7 @@ while True:
 					data2 = data2.encode('UTF-8')
 					sock.sendto(data2,server_address)
 
-
-
-	
 	if player1 is not None:
-
 		player1.physicsHandler(fps)
 		data2 = "pos;"+str(clientid)+";"+str(player1.x)+";"+str(player1.y)+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+";"+str(int(player1.hitpoints))+"\n"
 		data2 = data2.encode('UTF-8')
@@ -392,10 +353,6 @@ while True:
 		if len(messages) == 7 or (msgtimeout > 350 and len(messages)>0):
 			msgtimeout = 0
 			messages.remove(messages[0])
-
-
-		
-
 
 		player1.render(screen,clientid)
 		pygame.mouse.set_visible(0)
@@ -448,12 +405,7 @@ while True:
 			else:
 				textSurf = messagefont.render(messages[i], 1, (255,255,255))
 				textRect = pygame.Rect(0+5,i*40, amount[0], amount[1])
-				#textRect.center = (((100/2)), (60+(60/2)+i*40))
-				#textRect.center = (0+amount[0],0+amount[1]+i*40)
 				screen.blit(textSurf, textRect)
-
-				
-
 
 		if msgbox == True:
 			start = menu.drawMessage(screen, state,events,title)
@@ -463,7 +415,6 @@ while True:
 				data2 = data2.encode('UTF-8')
 				sock.sendto(data2,server_address)
 
-		#if kicked == True:
 		if lockout == False:
 			x = inputs.run(state,player1,events,msgbox,sock,server_address,clientid,deathtimeout)
 
@@ -480,21 +431,9 @@ while True:
 		lenofmsg = titlefont2.size(roomsg)
 		roomsg2 = "Ammo: "+str(int(player1.maxammo-player1.ammo))
 		lenofmsg3 = titlefont2.size(roomsg2)
-
-
-		
-							
-
 		char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
 		screen.blit(char1, (1024-lenofmsg[0] , 10))
 		char3 = titlefont2.render((roomsg2), 1, (255,255,255))
 		screen.blit(char3, (1020-lenofmsg3[0] , 50))
-
-		
-		
-			
-					
-
-
 		pygame.display.flip()
 sock.close()

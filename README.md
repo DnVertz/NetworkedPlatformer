@@ -22,13 +22,15 @@
 1. CD into the directory where main.py is present.
 2. run pip3 install -r requirements.txt to install the required packages.
 3. run python3 main.py to start a client.(On inital run it will take a f)
-4. either connect to my server at IP:172.105.175.50 and Port:8888 or start your own server by running server.py in a seprate command line window and entering the on screen IP and Port. (If you wish to run your own server this requires the deafult port 8888 to be forwarded)
-5. Choose a name 
-6. Enter the game!
+4. either connect to my server at IP:172.105.175.50 and Port:8888 or start your own server by running server.py in a seprate command line window and entering the on screen IP and Port (If you wish to run your own server this requires the deafult port 8888 to be forwarded). To enter the IP and Port just hover over the respective boxes and type the IP or Port.
+5. Choose a name by hovering over the name box and typing what you want to be called(there is a character limit).
+6. Enter the game by clicking Done!
 
 Screenshots:
 
-1. Installing required libraries ![image](images/image.png)
+1. Installing required libraries 
+	
+	![image](images/image.png)
 
 2. Entering the ip of a server
 

@@ -3,15 +3,10 @@ from threading import Lock
 import time
 import pygame
 import pickle
-
-
-
 import uuid, asyncio
 import socket
 import socketserver
-#Jank cannot describe this solution
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
 s.connect(("8.8.8.8", 8008))
 HOSTname = str(s.getsockname()[0])
 s.close()
@@ -21,12 +16,6 @@ tick = 0
 reverse = False
 players = []
 bullets = []
-#players_lock = threading.Lock()
-s_print_lock = Lock()
-def s_print(*a, **b):
-    """Thread safe print function"""
-    with s_print_lock:
-        print(*a, **b)
 
 
 def broadcast(data):
@@ -36,29 +25,17 @@ def broadcast(data):
 		except:
 			pass
 
-def removePlayer(playerID):
-	for player in players:
-		if player.id == playerID:
-			players.remove(player)
-
 def sendPlayerInit(player, addr,socket):
 	data = "init;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(player.name)+"\n"
 	socket.sendto(data.encode('UTF-8'),addr)
-
 
 def sendBulletSpawn(x,y,vx,vy,idd,addr,socket,room,size):
 	data = "bspawn;"+str(x)+";"+str(y)+";"+str(vx)+";"+str(vy)+";"+str(idd)+";"+str(room)+";"+str(size)+"\n"
 	socket.sendto(data.encode('UTF-8'),addr)
 
-
-
 def sendPlayerSpawn(player,addr):
 	data = "spawn;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(player.name)+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
-
-def sendPlayerJoin(player):
-	data = "join;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+"\n"
-	broadcast(data.encode('UTF-8'))
 
 def sendPlayerLeave(player,addr,socket):
 	data = "leave;"+str(player.id)+"\n"
@@ -67,7 +44,6 @@ def sendPlayerLeave(player,addr,socket):
 def sendPlayerTick(player,addr,socket,tick,rev):
 	data = "tick;"+str(tick)+";"+str(rev)+"\n"
 	socket.sendto(data.encode('UTF-8'),addr)
-
 
 def sendPlayerPos(player,addr):
 	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+"\n"
@@ -85,9 +61,6 @@ def sendPlayerKilled(socket,addr,id,id2):
 	data = "killed;"+str(id)+";"+str(id2)+"\n"
 	socket.sendto(data.encode('UTF-8'),addr)
 
-def sendPlayerTest(socket,addr):
-	data = "test;"+"\n"
-	socket.sendto(data.encode('UTF-8'),addr)
 
 def timeout():
 	clock = pygame.time.Clock() 
@@ -127,29 +100,8 @@ def timeout():
 					sendPlayerLeave(p,x.addr,x.socket)
 				players.remove(p)
 
-			
-
-
-
 thr = Thread(target = timeout,args =())
 thr.start()
-
-class PositionUpdate:
-	def __init__(self, pid, x: int, y: int):
-		self.id = pid
-		self.x = x
-		self.y = y
-	def updatePlayer(self):
-		for i in range(len(players)):
-			if players[i].id == self.id:
-				players[i].x = self.x
-				players[i].y = self.y
-				break
-	def forwardToClients(self):
-		data = "pos;"+str(self.id)+";"+str(self.x)+";"+str(self.y)+"\n"
-		broadcast(data.encode('UTF-8'))
-
-
 
 class Player:
 	def __init__(self, socket,addr,name):
@@ -167,11 +119,6 @@ class Player:
 		self.angle = 0
 		self.hitpoints = 100
 		self.timer = 0
-	def setPosition(self, x, y):
-		self.x = x
-		self.y = y
-	def getPosition(self):
-		return (self.x, self.y)
 
 class Bullet:
 	def __init__(self,x=0,y=0,vx=0,vy=0,idd= 0,room = 0,addr = 0):
@@ -182,22 +129,15 @@ class Bullet:
 		self.vy = 0
 		self.addr = addr
 		self.room = room
-	def setPosition(self, x, y):
-		self.x = x
-		self.y = y
-	def getPosition(self):
-		return (self.x, self.y)
+
 
 
 
 class MyUDPHandler(socketserver.DatagramRequestHandler):
 	def handle(self):
-		#print("a")
 		data = self.request[0].strip()
 		socket = self.request[1]
-		#socket.settimeout(10)
 		data = data.decode()
-		#print(self.request)
 		split = data.split(";")
 
 
@@ -235,7 +175,6 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 				sendPlayerInit(player, self.client_address,socket) #send init id and pos to player
 
 				for p in players:
-					#print(p.id)
 					if p is not player:
 						sendPlayerSpawn(p,player.addr)
 						sendPlayerSpawn(player,p.addr)
@@ -281,23 +220,10 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 				sendPlayerKilled(socket,p.addr,split[1],split[2])
 
 		elif split[0] == 'joinbullet':
-
-
 			bullet = Bullet(split[1],split[2],split[3],split[4],split[5],split[6],self.client_address)
-
 			bullets.append(bullet)
 			for p in players:
-				#if bullet.addr is not p.addr:
 				sendBulletSpawn(split[1],split[2],split[3],split[4],split[5],p.addr,socket,split[6],split[7])
-
-
-		
-
-
-
-		
-
-
 
 
 async def main():
