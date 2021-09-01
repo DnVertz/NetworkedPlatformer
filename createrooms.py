@@ -1,6 +1,7 @@
 import hitboxes
 import pickle
-def create():
+import json
+def create(rooms3):
 	roomcount = 0
 	coll = None
 	obstacles = None
@@ -9,18 +10,24 @@ def create():
 	coll0 = []
 	coll1= []
 	rooms2 = []
+	#rooms2 =list(rooms3)
 	rooms = []
 	#coll = eval("coll" + str(player1.room))
+	#print(rooms2[0])
+
 
 	data = [[0,0],[0,640]],[[1024,0],[1024,640]],[[0,640],[1024,640]],[[0,0],[1024,0]]
-	with open('levels.pkl', 'rb') as fr:
+	"""with open('levels.pkl', 'rb') as fr:
 		try:
 			while True:
 				rooms2.append(pickle.load(fr))
 		except EOFError:
-			pass
+			pass"""
 
-	for x in rooms2[0]:
+	rooms2 = json.loads(rooms3)
+
+
+	for x in rooms2:
 		y = []
 		for z in data:
 			x.append(z)

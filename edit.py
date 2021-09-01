@@ -1,8 +1,6 @@
-#idea load hitbox data into server handle it like clients and transmit the telemtry for the hitbox positions to the clients
 import pygame 
 import os
 import pickle 
-
 pygame.init()
 width = 1224
 height = 840
@@ -26,7 +24,6 @@ roomcounter= 0
 state = "start"
 
 def save():
-
 	global objects
 	global roomcounter
 	export = []
@@ -38,21 +35,7 @@ def save():
 			x[2][3] -= 100
 			if x[1][0] > 0 and x[1][1] > 0:
 				export.append(x)
-
-
 	pickle.dump(objects, open("levels.pkl","wb"))
-	
-	"""
-	
-	if roomcounter == 0:
-
-		pickle.dump(export, open("levels.pkl","wb"))
-	else:
-		pickle.dump(export, open("levels.pkl","ab"))
-
-		#roomcounter += 1"""
-
-	
 	for y in objects:
 		for x in y:
 			x[0][0] += 100
@@ -60,17 +43,11 @@ def save():
 			x[2][2] += 100
 			x[2][3] += 100
 
-
 while True:
-	
-
-
-	
 	events = pygame.event.get()
 	for event in events:
 		if event.type == pygame.QUIT:
 			os._exit(1)
-
 	if state== "start":
 		keys = pygame.key.get_pressed()
 		screen.fill((128,128,128))
@@ -88,26 +65,22 @@ while True:
 					pass
 			objects = objects[0]
 			if objects is not []:
-				print(objects)
 				append = True
 				for y in objects:
 					for x in y:
-						
-						x.append([0,0,0,0])
+						#x.append([0,0,0,0])
 						x[0][0] += 100
 						x[0][1] += 100
 						x[2][2] += 100
 						x[2][3] += 100
 
-
-
-			#print(objects)
-					
+		if keys[pygame.K_BACKSPACE]:
+			new =[]
+			pickle.dump(new, open("levels.pkl","wb"))		
 		pygame.display.flip()
 
 	else:
 		save()
-		#print(objects)
 		pygame.mouse.set_visible(0)
 		screen.fill((41,41,41))
 		pygame.draw.rect(screen, (153,0,0), (0,0,350,85))
@@ -119,34 +92,27 @@ while True:
 		if append == True:
 			try:
 				for x in objects[roomcounter]:
-					
 						rect = pygame.Rect((x[0][0],x[0][1],x[1][0],x[1][1]))
-						#rect.normalize()
 						try:
-							if x[2][0] == 1:
-								
-								#rect2 = pygame.Rect((x[0][0],x[0][1],x[2][3]+x[0][0],10))
-								#pygame.draw.rect(screen,(255,0,0),rect2)
-								pygame.draw.rect(screen,(255,0,0),rect)
-								
-										
-
-							elif x[2][0] == 2:
-								pygame.draw.rect(screen,(255,0,0),rect)
-
-								
+							if x[2][0] ==1:
+								if x[2][1] == 3:
+									pygame.draw.rect(screen,(204, 20, 20),rect)
+								else:
+									pygame.draw.rect(screen,(255, 0, 0),rect)
+							elif x[2][0] ==2:
+								if x[2][1] == 3:
+									pygame.draw.rect(screen,(204, 20, 20),rect)
+								else:
+									pygame.draw.rect(screen,(255, 0, 0),rect)
+							elif x[2][1] == 3:
+								pygame.draw.rect(screen,(20, 219, 73),rect)
 							else:
 								pygame.draw.rect(screen,(60,60,60),rect)
-
 						except:
 							pygame.draw.rect(screen,(60,60,60),rect)
 			except:
-				print("nruh")
 				objects.append([])
-							
-
-		
-		
+						
 		mouseX, mouseY = pygame.mouse.get_pos()
 		pygame.draw.line(screen, [255,255,255], (mouseX-10,mouseY), (mouseX+10,mouseY))
 		pygame.draw.line(screen, [255,255,255], (mouseX,mouseY-10), (mouseX,mouseY+10))
@@ -163,16 +129,19 @@ while True:
 							if len(objects[roomcounter]) >= 1:
 								if hbox[2][0] ==1:
 									x = objects[roomcounter].index(hbox)
-									print(x)
+
 									objects[roomcounter].remove(hbox)
 									objects[roomcounter].remove(objects[roomcounter][x])
-								else:
+								elif hbox[2][0] !=2:
 									objects[roomcounter].remove(hbox)
-
+								else:
+									x = objects[roomcounter].index(hbox) -1
+									objects[roomcounter].remove(hbox)
+									objects[roomcounter].remove(objects[roomcounter][x])
 						counter = 0
+
 			if append == False:
 				if len(objects) >= 1:
-
 					objects.pop()
 					counter = 0
 
@@ -200,22 +169,15 @@ while True:
 		if keys[pygame.K_RSHIFT] and counter > 10:
 			placed = False
 			if append == True:
-
-				print(len(objects))
-				print(roomcounter)
 				if len(objects) -1 > 0:
 					if roomcounter + 1 == len(objects):
 						roomcounter -= 1
 					objects.pop()
 					counter = 0
-
-
-
 		counter += 1
 
 		if mouse_buttons[0] == True and specify == False:
 			if append == True:
-			
 				if placed == False and counter > 10:
 					objects[roomcounter].append([[mouseX,mouseY],[10,10],[0,0,0,0]])
 					oldx = mouseX
@@ -223,15 +185,9 @@ while True:
 					placed = True
 					counter = 0
 					
-
 				if placed == True and counter > 10:
 					placed = False
 					counter = 0
-
-
-
-
-			
 
 		if mouse_buttons[2] == True and placed == True and counter > 10:
 			if append == True:
@@ -240,14 +196,9 @@ while True:
 				specify = True
 				counter = 0
 
-
-
 		if  mouse_buttons[2] == True and specify == True and counter > 10:
 				specify = False
-				#objects[roomcounter].pop()
 				counter = 0
-
-
 
 		if placed == True:
 			if append == True:
@@ -255,18 +206,47 @@ while True:
 				(objects[roomcounter][len(objects[roomcounter])-1])[1][0] = mouseX-oldx
 				(objects[roomcounter][len(objects[roomcounter])-1])[1][1] = mouseY-oldy
 
-
 		if specify == True:
 			if append == True:
 				(objects[roomcounter][len(objects[roomcounter])-1])[1][0] = mouseX-oldx
 				(objects[roomcounter][len(objects[roomcounter])-1])[2][0] = 2
+				(objects[roomcounter][len(objects[roomcounter])-1])[2][1] = 1
 				(objects[roomcounter][len(objects[roomcounter])-2])[2][0] = 1
 				(objects[roomcounter][len(objects[roomcounter])-2])[2][1] = 1
 				(objects[roomcounter][len(objects[roomcounter])-2])[2][2] = oldx
 				(objects[roomcounter][len(objects[roomcounter])-2])[2][3] = mouseX
 
-		
-
-
+		try:
+			for hbox in objects[roomcounter]:
+				if (hbox[0][0]) < (int(float(mouseX))) and hbox[0][0] + hbox[1][0] > int(float(mouseX)):
+					if hbox[0][1] + hbox[1][1]> int(float(mouseY)) and hbox[0][1]< (int(float(mouseY))):
+						if hbox[2][0] ==1:
+							x = objects[roomcounter].index(hbox) +1
+							hbox[2][1] = 3
+							objects[roomcounter][x][2][1]=3
+						elif hbox[2][0] ==2:			
+							x = objects[roomcounter].index(hbox) -1
+							hbox[2][1] = 3
+							objects[roomcounter][x][2][1]=3					
+						else:
+							hbox[2][1] = 3
+					else:
+						if hbox[2][0] ==1:
+							x = objects[roomcounter].index(hbox) +1
+							hbox[2][1] = 0
+							objects[roomcounter][x][2][1]=0
+						elif hbox[2][0] ==2:				
+							x = objects[roomcounter].index(hbox) -1
+							hbox[2][1] = 1
+							objects[roomcounter][x][2][1]=1
+						else:
+							hbox[2][1] = 0			
+				else:
+					if hbox[2][0] ==1:
+						hbox[2][1] = 1
+					else:
+						hbox[2][1] = 0
+		except:
+			pass
 
 		pygame.display.flip()

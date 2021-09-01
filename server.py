@@ -2,6 +2,7 @@ from threading import Thread
 from threading import Lock
 import time
 import pygame
+import pickle
 
 
 
@@ -119,6 +120,7 @@ def timeout():
 		for p in players:
 			sendPlayerTick(p,p.addr,p.socket,tick,reverse)
 			p.timeout += 1
+			p.timer += 1
 			print(p.timeout)
 			if p.timeout > 300:
 				for x in players:
@@ -164,6 +166,7 @@ class Player:
 		self.activeWeapon = 1
 		self.angle = 0
 		self.hitpoints = 100
+		self.timer = 0
 	def setPosition(self, x, y):
 		self.x = x
 		self.y = y
@@ -210,13 +213,27 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 
 
 			if allow == True:
-				msg = "True"
+				rooms2 = []
+				with open('levels.pkl', 'rb') as fr:
+					try:
+						while True:
+							rooms2.append(pickle.load(fr))
+					except EOFError:
+						pass
+
+				msg = "True;"+str(rooms2[0])
+				print(rooms2[0])
 				msg = msg.encode()
 				socket.sendto(msg,self.client_address)
 				player = Player(socket,self.client_address,split[1])
 				playerID = player.id
 				players.append(player)
+				rooms2 = []
+				
+				
+
 				sendPlayerInit(player, self.client_address,socket) #send init id and pos to player
+
 				for p in players:
 					#print(p.id)
 					if p is not player:

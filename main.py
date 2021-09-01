@@ -42,7 +42,7 @@ screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 
 
 hitbox = []#loads the hitboxes
-rooms = createrooms.create()
+#rooms = createrooms.create()
 
 #stores the level hitboxes... can and will be changed into a text file
 
@@ -75,7 +75,7 @@ while True:
 			connec = start
 			state.state = "joincheck"
 	else:
-		try: 
+		#try: 
 			sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM) # UDP
 			server_address = (str(connec[0]), int(connec[1]))
 			name = str(connec[2])
@@ -91,16 +91,21 @@ while True:
 				sock.settimeout(0.5)
 				initdata2,addr = sock.recvfrom(4096)
 				initdata2 = initdata2.decode('UTF-8')
+				print(initdata2)
+				split = initdata2.split(";")
+				print(initdata2[0])
 
-				if initdata2 == "True":
+				if split[0] == "True":
+					rooms = createrooms.create(split[1])
+
 					break
 				else:
 					title = "Name in use!!!!"
 					state.state = "start"
 
-		except:
-			title = "Wrong IP/Port!!!!"
-			state.state = "start"
+		#except:
+			#title = "Wrong IP/Port!!!!"
+			#state.state = "start"
 
 	pygame.display.flip()
 
@@ -170,6 +175,7 @@ def networkthread(clientid):
 				for x in multiplays:
 					if x.index == split2[1]:
 						multiplays.remove(x)
+						messages.append(x.name +" has left")
 
 			if split2[0] == "tick":
 				#print(split2)
@@ -210,9 +216,9 @@ thr.start()
 
 def signal_handler(sig, frame):
 
-	"""data2 = "leave;"+str(clientid)+"\n"
+	data2 = "leave;"+str(clientid)+"\n"
 	data2 = data2.encode('UTF-8')
-	sock.sendto(data2,server_address)"""
+	sock.sendto(data2,server_address)
 	os._exit(1)
 
 def roomcheck(player1):
@@ -261,19 +267,7 @@ while True:
 	roomcheck(player1)
 
 	screen.fill((128,128,128))
-	roomsg = "Room: "+str(player1.room +1)
-	lenofmsg = titlefont2.size(roomsg)
-	roomsg2 = "Ammo: "+str(int(player1.maxammo-player1.ammo))
-	lenofmsg3 = titlefont2.size(roomsg2)
 
-
-	
-						
-
-	char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
-	screen.blit(char1, (1024-lenofmsg[0] , 10))
-	char3 = titlefont2.render((roomsg2), 1, (255,255,255))
-	screen.blit(char3, (1020-lenofmsg3[0] , 50))
 
 
 
@@ -483,6 +477,20 @@ while True:
 				msgbox = False 
 			else:
 				msgbox = True
+
+		roomsg = "Room: "+str(player1.room +1)
+		lenofmsg = titlefont2.size(roomsg)
+		roomsg2 = "Ammo: "+str(int(player1.maxammo-player1.ammo))
+		lenofmsg3 = titlefont2.size(roomsg2)
+
+
+		
+							
+
+		char1 = titlefont2.render("Room: "+str(player1.room +1), 1, (255,255,255))
+		screen.blit(char1, (1024-lenofmsg[0] , 10))
+		char3 = titlefont2.render((roomsg2), 1, (255,255,255))
+		screen.blit(char3, (1020-lenofmsg3[0] , 50))
 
 		
 		
