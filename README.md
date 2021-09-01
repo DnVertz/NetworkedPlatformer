@@ -28,17 +28,15 @@
 
 Screenshots:
 
-1. Installing required libraries 
+1. Installing required libraries ![image](images/image.png)
 
-   ![image](images/image.png)
+2. Entering the ip of a server
 
-   2. Entering the ip of a server
+   ![image2](images/image2.png)
 
-      ![image2](images/image2.png)
+3. Ingame 
 
-   3. Ingame 
-
-      ![image3](images/image3.png)
+   ![image3](images/image3.png)
 
 ## Controls for client(main.py):
 
