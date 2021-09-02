@@ -7,7 +7,7 @@
    1. Build log is within commits
    2. User manual is within this readme
    3. GUI design + internal help is within the program
-3. Building the Solutions
+3. Building the Solution
    1. Within the program
 4. Testing the Solution
    1. Test data is within Test Data.md 
