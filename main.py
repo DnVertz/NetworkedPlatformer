@@ -32,9 +32,12 @@ title = "Platformer"
 player1 = None
 predict = False
 msgbox = False
+tabmenu = False
 name = None
 msgtimeout = 0
 deathmsgtimeout = 0
+counter = 0
+limit = 3
 
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 
@@ -159,6 +162,8 @@ def networkthread(clientid):
 									x.activeWeapon = int(split2[5])
 									x.angle = int(split2[6])
 									x.hitpoints = int(split2[7])
+									x.deaths = split2[8]
+									x.timer =split2[9] 
 
 					if clientid == split2[1]:
 						player1.deaths = split2[8]
@@ -368,8 +373,7 @@ while True:
 		player1.render(screen,clientid)
 		pygame.mouse.set_visible(0)
 		mouseX, mouseY = pygame.mouse.get_pos()
-		pygame.draw.line(screen, [0,0,0], (mouseX-10,mouseY), (mouseX+10,mouseY))
-		pygame.draw.line(screen, [0,0,0], (mouseX,mouseY-10), (mouseX,mouseY+10))
+		
 
 		if player1.hitpoints < 100:
 			regen += 1
@@ -426,17 +430,80 @@ while True:
 				data2 = data2.encode('UTF-8')
 				sock.sendto(data2,server_address)
 
+		if tabmenu == True:
+			
+			counter += 1
+			for event in events:
+				if event.type == pygame.KEYDOWN:
+					keys2 = pygame.key.get_pressed()
+					if keys2[pygame.K_RIGHT] and counter > 10 and len(multiplays)> limit:
+						limit += 3
+						counter = 0
+
+					if keys2[pygame.K_LEFT] and counter > 10 and 3 < limit:
+						limit -= 3
+						counter = 0
+
+
+
+
+
+			
+			rect = pygame.Rect(512-275,320-137.5,550,275)
+			pygame.draw.rect(screen,(153,0,0),rect)
+			rect = pygame.Rect(512-250,320-125,500,250)
+			pygame.draw.rect(screen,(60,60,60),rect)
+			print(multiplays)
+			offset = 0
+			throwaway = list()
+
+			for u in range(limit-3,limit):
+				try:
+					i = multiplays[u]
+					#num = multiplays.index(i)
+					throwaway.append(i)
+				except:
+					break
+
+			
+			for x in throwaway:
+				
+				if x.index == clientid:
+
+					message = "(You)Name: "+ str(x.name)+" Room:"+str(player1.room)+" Time: "+str(round(int(player1.timer)/120,2))
+					textSurf = messagefont.render(message , 1, (255,255,255))
+					textRect = pygame.Rect(512-250,320-125, 500, 20)
+					screen.blit(textSurf, textRect)
+
+				else:
+					offset += 1
+					message = "Name: "+ str(x.name)+" Room: "+str(x.room)+" Time: "+str(round(int(x.timer)/120,2))
+					textSurf = messagefont.render(message , 1, (255,255,255))
+					textRect = pygame.Rect(512-250,320-125+offset*40, 500, 20)
+					screen.blit(textSurf, textRect)
+
+				
+
 		if lockout == False:
-			x = inputs.run(state,player1,events,msgbox,sock,server_address,clientid,deathtimeout)
+			x = inputs.run(state,player1,events,msgbox,sock,server_address,clientid,deathtimeout,tabmenu)
 
 		if lockout == True:
 			if player1.vy == 0:
 				lockout = False
-		if x == True:
+		if x == "RETURN":
 			if msgbox == True:
 				msgbox = False 
 			else:
 				msgbox = True
+		if x == "TAB": 
+			if tabmenu == True:
+				tabmenu = False
+			else:
+				tabmenu = True
+
+		pygame.draw.line(screen, [0,0,0], (mouseX-10,mouseY), (mouseX+10,mouseY))
+		pygame.draw.line(screen, [0,0,0], (mouseX,mouseY-10), (mouseX,mouseY+10))
+
 
 		roomsg = "Room: "+str(player1.room +1)
 		lenofmsg = titlefont2.size(roomsg)

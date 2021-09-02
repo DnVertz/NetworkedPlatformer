@@ -1,14 +1,17 @@
 import pygame 
 import ui 
-def run(state,player,events,msgbox,sock,server,clientid,deathtimeout):
+def run(state,player,events,msgbox,sock,server,clientid,deathtimeout,tabmenu):
 	shooting = False
 	for event in events:
 		if event.type == pygame.KEYDOWN:
 			keys2 = pygame.key.get_pressed()
 			if keys2[pygame.K_RETURN]:
-				return True
+				return "RETURN"
 
-	if msgbox == False:
+			if keys2[pygame.K_TAB]:
+				return "TAB"
+
+	if msgbox == False and tabmenu == False:
 		keys = pygame.key.get_pressed()
 		mouse_buttons = pygame.mouse.get_pressed()
 		if keys[pygame.K_d]:
@@ -40,6 +43,9 @@ def run(state,player,events,msgbox,sock,server,clientid,deathtimeout):
 			if shooting == False:
 				if player.ammo >0:
 					player.reload()
+		
+
+
 
 
 def handleMouse(pygame, player):

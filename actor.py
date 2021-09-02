@@ -35,6 +35,8 @@ class actor:
 		self.shootimeout = 10
 		self.weaontimeout = 10
 		self.hitpoints = 100
+		self.deaths = 0
+		self.timer = 0
 		numbs = []
 		for word in self.index:
 			if word.isdigit():

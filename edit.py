@@ -1,6 +1,7 @@
 import pygame 
 import os
 import pickle 
+import ui
 pygame.init()
 width = 1224
 height = 840
@@ -55,7 +56,12 @@ while True:
 		pygame.draw.rect(screen, (41,41,41), (0,0,320,70))
 		char1 = titlefont.render("Editor", 1, (255,255,255))
 		screen.blit(char1, (10, 10))
-		if keys[pygame.K_RETURN]:
+		startbutton1 = ui.button("Edit Levels", 612-500/2, 285, 500, 100)
+		startbutton2 = ui.button("Create New Levels", 612-500/2, 485-50, 500, 100)
+		startbutton1.render(screen)
+		startbutton2.render(screen)
+
+		if startbutton1.pressed(events):
 			state = None
 			with open('levels.pkl', 'rb') as fr:
 				try:
@@ -68,15 +74,31 @@ while True:
 				append = True
 				for y in objects:
 					for x in y:
-						#x.append([0,0,0,0])
 						x[0][0] += 100
 						x[0][1] += 100
 						x[2][2] += 100
 						x[2][3] += 100
 
-		if keys[pygame.K_BACKSPACE]:
+		if startbutton2.pressed(events):
 			new =[]
-			pickle.dump(new, open("levels.pkl","wb"))		
+			pickle.dump(new, open("levels.pkl","wb"))	
+			with open('levels.pkl', 'rb') as fr:
+				try:
+					while True:
+						objects.append(pickle.load(fr))
+				except EOFError:
+					pass
+			objects = objects[0]
+			if objects is not []:
+				append = True
+				for y in objects:
+					for x in y:
+						x[0][0] += 100
+						x[0][1] += 100
+						x[2][2] += 100
+						x[2][3] += 100
+			state = None
+
 		pygame.display.flip()
 
 	else:
