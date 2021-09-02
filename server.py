@@ -91,7 +91,7 @@ def timeout():
 		for p in players:
 			sendPlayerTick(p,p.addr,p.socket,tick,reverse)
 			p.timeout += 1
-			if p.win == "False":
+			if p.win == "False" and p.start == True:
 				p.timer += 1
 			if p.timeout > 300:
 				for x in players:
@@ -119,6 +119,7 @@ class Player:
 		self.timer = 0
 		self.win = "False"
 		self.deaths = 0
+		self.start = False
 
 class Bullet:
 	def __init__(self,x=0,y=0,vx=0,vy=0,idd= 0,room = 0,addr = 0):
@@ -222,6 +223,11 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 				sendPlayerKilled(socket,p.addr,split[1],split[2])
 				if p.id == split[2]:
 					p.deaths +=1
+
+		elif split[0] == 'start':
+			for p in players:
+				if p.name == split[1]:
+					p.start = True
 
 
 

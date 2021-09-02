@@ -38,6 +38,7 @@ msgtimeout = 0
 deathmsgtimeout = 0
 counter = 0
 limit = 3
+controldisp = True
 
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 
@@ -53,6 +54,8 @@ pygame.init()
 titlefont = pygame.font.Font(r'arial.ttf', 40)
 titlefont2 = pygame.font.Font(r'arial.ttf', 30)
 messagefont = pygame.font.Font(r'arial.ttf', 20)
+controls = pygame.image.load(r'controls.png')
+
 
 while True:
 	if quitol == True:
@@ -87,9 +90,11 @@ while True:
 				initdata2 = initdata2.decode('UTF-8')
 				split = initdata2.split(";")
 
-
 				if split[0] == "True":
+
 					rooms = createrooms.create(split[1])
+						
+
 
 					break
 				else:
@@ -267,6 +272,8 @@ def roomcheck(player1):
 
 while True:
 
+
+
 	deathtimeout += 1
 	signal.signal(signal.SIGINT, signal_handler)
 	roomcheck(player1)
@@ -276,6 +283,7 @@ while True:
 		lenofmsg2 = titlefont2.size("Reloading")
 		char2 = titlefont2.render("Reloading", 1, (255,255,255))
 		screen.blit(char2, (315+lenofmsg2[0], 320))
+
 
 	hitbox = []
 
@@ -491,12 +499,14 @@ while True:
 
 				
 
-		if lockout == False:
+		x = None
+		if lockout == False and controldisp == False:
 			x = inputs.run(state,player1,events,msgbox,sock,server_address,clientid,deathtimeout,tabmenu)
 
 		if lockout == True:
 			if player1.vy == 0:
 				lockout = False
+
 		if x == "RETURN":
 			if msgbox == True:
 				msgbox = False 
@@ -511,6 +521,23 @@ while True:
 		pygame.draw.line(screen, [0,0,0], (mouseX-10,mouseY), (mouseX+10,mouseY))
 		pygame.draw.line(screen, [0,0,0], (mouseX,mouseY-10), (mouseX,mouseY+10))
 
+
+		if controldisp == True:
+			screen.blit(controls, (0, 0))
+			pygame.draw.rect(screen, (153,0,0), (0,0,350,85))
+			pygame.draw.rect(screen, (41,41,41), (0,0,320,70))
+			char1 = titlefont.render("Controls", 1, (255,255,255))
+			screen.blit(char1, (10, 10))
+			startbutton1 = ui.button("Continue", 620, 555, 300, 75)
+			startbutton1.render(screen)
+			if startbutton1.pressed(events):
+				msgs = str("start;"+player1.name+"\n")
+				byte = msgs.encode()
+				sock.sendto(byte,server_address)
+				controldisp = False
+		else:
+			pygame.mouse.set_visible(0)
+				
 
 		roomsg = "Room: "+str(player1.room +1)
 		lenofmsg = titlefont2.size(roomsg)
