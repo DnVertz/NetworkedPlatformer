@@ -1,5 +1,22 @@
 # NetworkedPlatformer
 
+## Outline of what is where for the task
+
+1. Defining the Problem: Found within this readme 
+2. Planning the Solution:
+   1. Build log is within commits
+   2. User manual is within this readme
+   3. GUI design + internal help is within the program
+3. Building the Solutions
+   1. Within the program
+4. Testing the Solution
+   1. Test data is within Test Data.md 
+   2. Peer report is within Desk Check.pdf and Peer Report.md
+5. Modifying the Solution
+   1. Justification of coding is within Justification Of Coding.md
+   2. Online Class Contributions is at scotsict.com 
+   3. Reflection is within reflection.md
+
 ## System Specs: 
 
 ### Minimum Hardware Specs:
