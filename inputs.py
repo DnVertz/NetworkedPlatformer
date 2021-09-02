@@ -1,3 +1,4 @@
+#this file handles the players inputs and where they are aiming
 import pygame 
 import ui 
 def run(state,player,events,msgbox,sock,server,clientid,deathtimeout,tabmenu):

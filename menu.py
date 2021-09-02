@@ -1,3 +1,4 @@
+#this file handles the drawing of preset menus, I drop this later on because its very conveluted and annoying to work with.
 import pygame
 import ui
 special = [ui.textbutton("IP: ",370, 185, 300, 75),ui.textbutton("Port: ", 370, 285, 300, 75),ui.textbutton("Name: ", 370, 385, 300, 75,False)]

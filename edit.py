@@ -1,3 +1,4 @@
+#this level editor writes to the levels.pkl file if you want players to see these changes you must run your own instance of the server 
 import pygame 
 import os
 import pickle 

@@ -1,5 +1,6 @@
 from threading import Thread
 import pygame 
+#importing packages/seperate files
 import ui
 import menu
 import inputs
@@ -15,6 +16,7 @@ import createrooms
 import pygame.freetype
 all_bullets = []
 
+#defining variables
 HOST = None
 PORT = None
 lockout = False
@@ -40,12 +42,14 @@ counter = 0
 limit = 3
 controldisp = True
 
+#setting the screen parameters its important to have vsync as it appears choppy otherwise
+
 screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 
 
 hitbox = []#loads the hitboxes
-multiplays = []#stores the actor class
-messages = []
+multiplays = []#stores the actor class of the players within the game hence multiplays
+messages = []#this stores the messages of when someone sends something
 deathmessages = []
 
 state.state = "start"
@@ -53,11 +57,12 @@ pygame.init()
 
 titlefont = pygame.font.Font(r'arial.ttf', 40)
 titlefont2 = pygame.font.Font(r'arial.ttf', 30)
-messagefont = pygame.font.Font(r'arial.ttf', 20)
+messagefont = pygame.font.Font(r'arial.ttf', 20)#loading the fonts here because it slows down the program
 controls = pygame.image.load(r'controls.png')
 
 
 while True:
+	#this while loop establishes the connection between client and server while also checking if the entered information is correct
 	if quitol == True:
 		break
 	events = pygame.event.get()
@@ -108,11 +113,12 @@ while True:
 	pygame.display.flip()
 
 
+#after the loop breaks we finish up the connection 
 sock.settimeout(None)
 initdata,addr = sock.recvfrom(4096)
 
 initdata = initdata.decode('UTF-8')
-split = initdata.split("\n")
+split = initdata.split("\n") #recieving our data from the server(the UUID generated for us)
 for p in split:
 	split2 = p.split(";")
 	if split2[0] == "init":
@@ -127,6 +133,7 @@ FPS = 60
 fps = clock.tick(FPS)
 
 def networkthread(clientid):
+	#this thread handles receiving of packets, the large amount of globals is so that both threads can communicate 
 	global predict
 	global messages
 	global msgtimeout
@@ -230,12 +237,14 @@ thr = Thread(target = networkthread,args =(str(clientid),))
 thr.start()
 
 def signal_handler(sig, frame):
+	#this handles the safe quit of a client eg: ctrl+c in that case the leave packet is still sent
 	data2 = "leave;"+str(clientid)+"\n"
 	data2 = data2.encode('UTF-8')
 	sock.sendto(data2,server_address)
 	os._exit(1)
 
 def roomcheck(player1):
+	#this checks whether or not the player has reached the end of a room
 	global rooms
 	global lockout
 	if player1.x > 995:
@@ -271,15 +280,14 @@ def roomcheck(player1):
 		sock.sendto(data2,server_address)
 
 while True:
+	#this is the main thread which handles the transmission of packets + all game logic
 
-
-
-	deathtimeout += 1
+	deathtimeout += 1 #this is invincibility for when u spawn after dying
 	signal.signal(signal.SIGINT, signal_handler)
 	roomcheck(player1)
 	screen.fill((128,128,128))
 	timer = int(player1.timer)/120
-	if player1.reloading == True:
+	if player1.reloading == True: #displays "reloading" when you reload
 		lenofmsg2 = titlefont2.size("Reloading")
 		char2 = titlefont2.render("Reloading", 1, (255,255,255))
 		screen.blit(char2, (315+lenofmsg2[0], 320))
@@ -290,7 +298,7 @@ while True:
 
 
 
-	for y in rooms:
+	for y in rooms: #this handles the syncing of moving objects between clients based off of the server tick
 		for continuity in y:
 			if continuity.move != 0:
 				if tickreverse == "False":
@@ -301,7 +309,7 @@ while True:
 
 	
 	
-	for hbox in rooms[player1.room]:
+	for hbox in rooms[player1.room]: #handles hitboxes of when you enter a new room
 		hitbox.append(hitboxes.hitboxes(hbox.x,hbox.y,hbox.w,hbox.h,hbox.move))
 		rect = pygame.Rect(hbox.x,hbox.y,hbox.w,hbox.h)
 		rect.normalize()
@@ -309,7 +317,7 @@ while True:
 
 
 	if player1.all_bullets is not None:
-		#Check if bullets have collided 
+		#Check if bullets have collided with objects or players
 		for z in player1.all_bullets :
 			z.position += z.speed
 			pos_x = int(z.position.x)
@@ -347,17 +355,19 @@ while True:
 							player1.all_bullets.remove(z)
 
 	player1.hitboxes = hitbox
-	if quitol == True:
+	if quitol == True:#same thing as the safe quit earlier however this is for when you press the red X
 		data2 = "leave;"+str(clientid)+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 		break
+
 	events = pygame.event.get()
 	for event in events:
 		if event.type == pygame.QUIT:
 			quitol = True
 	
 	for hitbox in hitbox:
+		#if you get stuck inside a hitbox its coded to kill you here 
 		if hitbox.move != 0:
 			if (hitbox.x+5) < (player1.x+player1.w) and hitbox.x-5 + hitbox.w > player1.x:
 				if hitbox.y + hitbox.h> player1.y and hitbox.y < (player1.y+player1.h):
@@ -375,10 +385,12 @@ while True:
 					sock.sendto(data2,server_address)
 
 	if player1 is not None:
+		#send your position data to the server
 		player1.physicsHandler(fps)
 		data2 = "pos;"+str(clientid)+";"+str(player1.x)+";"+str(player1.y)+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+";"+str(int(player1.hitpoints))+";"+str(player1.win)+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
+		#handle the messages so it doesnt over flow
 		if len(messages) > 0:
 			msgtimeout += 1
 
@@ -391,7 +403,7 @@ while True:
 		mouseX, mouseY = pygame.mouse.get_pos()
 		
 
-		if player1.hitpoints < 100:
+		if player1.hitpoints < 100: #health regen
 			regen += 1
 			if regen > 175:
 				if player1.hitpoints + 10 > 100:
@@ -405,10 +417,10 @@ while True:
 			if p.index != clientid:
 				
 				if int(p.room) == int(player1.room):
-					p.render(screen,clientid)
+					p.render(screen,clientid)#rendering players only if they are in your room
 
 		for i in range(len(messages)):
-			amount = messagefont.size(messages[i])
+			amount = messagefont.size(messages[i]) #more message handling 
 			lst = messages[i].split()
 			lst2 = list(lst[0])
 
@@ -439,6 +451,7 @@ while True:
 				screen.blit(textSurf, textRect)
 
 		if msgbox == True:
+			#handling the message box 
 			start = menu.drawMessage(screen, state,events,title)
 			if start != None and start != '' and start != ' ':
 				connec = start
@@ -447,7 +460,7 @@ while True:
 				sock.sendto(data2,server_address)
 
 		if tabmenu == True:
-			
+			#handling the tab menu
 			counter += 1
 			for event in events:
 				if event.type == pygame.KEYDOWN:
@@ -482,6 +495,7 @@ while True:
 
 			
 			for x in throwaway:
+				#iterating through the list in groups of 3 to be displayed in the tab menu
 				
 				if x.index == clientid:
 
@@ -502,12 +516,13 @@ while True:
 		x = None
 		if lockout == False and controldisp == False:
 			x = inputs.run(state,player1,events,msgbox,sock,server_address,clientid,deathtimeout,tabmenu)
+			#handling the inputs
 
 		if lockout == True:
 			if player1.vy == 0:
 				lockout = False
 
-		if x == "RETURN":
+		if x == "RETURN": #pygames keypress event will constantly flip values, this prevents it
 			if msgbox == True:
 				msgbox = False 
 			else:
@@ -519,10 +534,10 @@ while True:
 				tabmenu = True
 
 		pygame.draw.line(screen, [0,0,0], (mouseX-10,mouseY), (mouseX+10,mouseY))
-		pygame.draw.line(screen, [0,0,0], (mouseX,mouseY-10), (mouseX,mouseY+10))
+		pygame.draw.line(screen, [0,0,0], (mouseX,mouseY-10), (mouseX,mouseY+10)) #crosshair
 
 
-		if controldisp == True:
+		if controldisp == True: #control menu
 			screen.blit(controls, (0, 0))
 			pygame.draw.rect(screen, (153,0,0), (0,0,350,85))
 			pygame.draw.rect(screen, (41,41,41), (0,0,320,70))
@@ -535,7 +550,7 @@ while True:
 				byte = msgs.encode()
 				sock.sendto(byte,server_address)
 				controldisp = False
-		else:
+		else: #jank solution
 			pygame.mouse.set_visible(0)
 				
 

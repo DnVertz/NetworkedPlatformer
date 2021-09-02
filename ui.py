@@ -84,7 +84,11 @@ class textbutton():
 
 
 						elif pygame.key.name(event.key).isnumeric() == True or pygame.key.name(event.key) == "." or (len(pygame.key.name(event.key)) == 1):
-							self.lst.append(pygame.key.name(event.key))
+							if self.number == False and len(self.text2)  < 6:
+								self.lst.append(pygame.key.name(event.key))
+
+							elif self.number == True and len(self.text2) < 16:
+								self.lst.append(pygame.key.name(event.key))
 
 					else:
 						self.text2 = self.text2[:-1]

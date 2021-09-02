@@ -1,8 +1,8 @@
+#this file is massive due to the sheer amount of variables that must be handled and the preset functions that come with that
 import pygame
 import numpy
 import random
 import bullet
-#import uuid
 import socket
 class actor:
 	def __init__(self, x=0, y=0, w=0, h=0, angle=0,hitboxes=0,index= 0,name = None,predict = False,room=0):

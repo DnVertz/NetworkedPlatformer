@@ -1,3 +1,4 @@
+#this reads in the levels.pkl file which is a list and transfers it into classes
 import hitboxes
 import pickle
 import json

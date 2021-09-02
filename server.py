@@ -195,7 +195,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 						players[i].win = split[8]
 
 					for p in players:
-						#if str(p.id) != str(players[i].id):
+
 						sendPlayerPos(players[i],p.addr)
 							
 		elif split[0] == 'leave':
