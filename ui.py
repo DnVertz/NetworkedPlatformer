@@ -1,6 +1,4 @@
 import pygame
-#import Slider
-#from pygame_widgets import Button
 #used when rendering the complex buttons in menus
 class uistate:
 	def __init__(self):
@@ -87,11 +85,6 @@ class textbutton():
 
 						elif pygame.key.name(event.key).isnumeric() == True or pygame.key.name(event.key) == "." or (len(pygame.key.name(event.key)) == 1):
 							self.lst.append(pygame.key.name(event.key))
-						
-
-
-					#elif pygame.key.name(event.key) == "space" and self.n:
-						#self.lst.append(" ")
 
 					else:
 						self.text2 = self.text2[:-1]
@@ -111,7 +104,7 @@ class textbutton():
 		pygame.draw.rect(screen, self.colour, (self.x,self.y,self.w,self.h))
 		buttonfont = pygame.font.Font(r"arial.ttf", 25)
 
-		if self.text2 is not '':
+		if self.text2 != '':
 			textSurf = buttonfont.render(self.text + self.text2 +self.pointer, 1, (255,255,255))
 		else:
 			textSurf = buttonfont.render(self.text+self.pointer, 1, (255,255,255))
@@ -198,7 +191,7 @@ class textbutton2():
 		pygame.draw.rect(screen, self.colour, (self.x,self.y,self.w,self.h))
 		buttonfont = pygame.font.Font(r"arial.ttf", 25)
 
-		if self.text2 is not '':
+		if self.text2 != '':
 			textSurf = buttonfont.render(self.text + self.text2 +self.pointer, 1, (255,255,255))
 		else:
 			textSurf = buttonfont.render(self.text+self.pointer, 1, (255,255,255))
@@ -216,7 +209,6 @@ class textbutton2():
 		if self.clock == 102:
 			self.clock = 0
 
-		#return self.text2
 	
 	def pressed(self,events):
 		mouseX, mouseY = pygame.mouse.get_pos()
@@ -224,20 +216,3 @@ class textbutton2():
 			for event in events:
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					return self.text2 
-
-
-
-
-
-
-
-		
-			
-
-					
-
-
-
-
-
-

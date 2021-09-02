@@ -40,10 +40,6 @@ screen = pygame.display.set_mode((width, height),pygame.SCALED,vsync = 1 )
 
 
 hitbox = []#loads the hitboxes
-#rooms = createrooms.create()
-
-#stores the level hitboxes... can and will be changed into a text file
-
 multiplays = []#stores the actor class
 messages = []
 deathmessages = []
@@ -130,6 +126,7 @@ def networkthread(clientid):
 	global player1
 	global servertick
 	global tickreverse
+
 	while True:
 		try:
 			data,addr2 = sock.recvfrom(4096)
@@ -153,14 +150,20 @@ def networkthread(clientid):
 
 			if split2[0] == "pos":
 					for x in multiplays:
+
 						if x.index == split2[1]:
-							x.setPos(float(split2[2]),float(split2[3]))
-				
-							x.setRoom(split2[4])
-							if len(split2) > 5:
-								x.activeWeapon = int(split2[5])
-								x.angle = int(split2[6])
-								x.hitpoints = int(split2[7])
+							if clientid != split2[1]:
+								x.setPos(float(split2[2]),float(split2[3]))
+								x.setRoom(split2[4])
+								if len(split2) > 5:
+									x.activeWeapon = int(split2[5])
+									x.angle = int(split2[6])
+									x.hitpoints = int(split2[7])
+
+					if clientid == split2[1]:
+						player1.deaths = split2[8]
+						player1.timer =split2[9]
+
 
 			if split2[0] == "leave":
 
@@ -193,10 +196,17 @@ def networkthread(clientid):
 
 			if split2[0] == "killed":
 				names = None
-				for p in multiplays:
-
-					if str(p.index) == str(split2[2]):
-						names = p.name
+				found = False
+				i = 1
+				length = len(multiplays)
+				while found is False:
+					if multiplays[i].index == split2[2]:
+						found = True
+						
+					else:
+						i += 1
+				
+				names = multiplays[i].name
 				messages.append(names +" has killed "+split2[1])
 				msgtimeout = 0
 
@@ -239,7 +249,7 @@ def roomcheck(player1):
 		lockout = True
 		player1.vx = 0
 		player1.hitpoints = 100
-		data2 = "die;"+str(player1.name)+"\n"
+		data2 = "die;"+str(player1.name)+";"+str(clientid)+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 
@@ -248,6 +258,7 @@ while True:
 	signal.signal(signal.SIGINT, signal_handler)
 	roomcheck(player1)
 	screen.fill((128,128,128))
+	timer = int(player1.timer)/120
 	if player1.reloading == True:
 		lenofmsg2 = titlefont2.size("Reloading")
 		char2 = titlefont2.render("Reloading", 1, (255,255,255))

@@ -46,7 +46,7 @@ def sendPlayerTick(player,addr,socket,tick,rev):
 	socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerPos(player,addr):
-	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+"\n"
+	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+";"+str(int(player.deaths))+";"+str(int(player.timer))+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerMsg(socket,message,addr,name):
@@ -77,8 +77,6 @@ def timeout():
 		if len(bullets) > 50:
 			bullets.remove(bullets[1])
 
-
-
 		if tick < 1000:
 			tick += 1
 
@@ -94,7 +92,6 @@ def timeout():
 			sendPlayerTick(p,p.addr,p.socket,tick,reverse)
 			p.timeout += 1
 			p.timer += 1
-			print(p.timeout)
 			if p.timeout > 300:
 				for x in players:
 					sendPlayerLeave(p,x.addr,x.socket)
@@ -119,6 +116,7 @@ class Player:
 		self.angle = 0
 		self.hitpoints = 100
 		self.timer = 0
+		self.deaths = 0
 
 class Bullet:
 	def __init__(self,x=0,y=0,vx=0,vy=0,idd= 0,room = 0,addr = 0):
@@ -162,7 +160,6 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 						pass
 
 				msg = "True;"+str(rooms2[0])
-				print(rooms2[0])
 				msg = msg.encode()
 				socket.sendto(msg,self.client_address)
 				player = Player(socket,self.client_address,split[1])
@@ -194,8 +191,8 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 						players[i].hitpoints = split[7]
 
 					for p in players:
-						if str(p.id) != str(players[i].id):
-							sendPlayerPos(players[i],p.addr)
+						#if str(p.id) != str(players[i].id):
+						sendPlayerPos(players[i],p.addr)
 							
 		elif split[0] == 'leave':
 			for i in range(len(players)):
@@ -204,8 +201,8 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 						if str(p.id) != str(players[i].id):
 							sendPlayerLeave(players[i],p.addr,socket)
 					players.remove(players[i])
-						
 					break
+
 		elif split[0] == 'msg':
 			for p in players:
 				p.timeout = 0
@@ -214,10 +211,16 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 		elif split[0] == 'die':
 			for p in players:
 				sendPlayerDie(socket,p.addr,split[1])
+				if str(p.id) == split[2]:
+					p.deaths +=1
 
 		elif split[0] == 'killed':
 			for p in players:
 				sendPlayerKilled(socket,p.addr,split[1],split[2])
+				if p.id == split[2]:
+					p.deaths +=1
+
+
 
 		elif split[0] == 'joinbullet':
 			bullet = Bullet(split[1],split[2],split[3],split[4],split[5],split[6],self.client_address)

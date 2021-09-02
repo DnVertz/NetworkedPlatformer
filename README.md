@@ -7,7 +7,7 @@
 1. CPU - at least 2 cores and 64bit 
 2. RAM-  at least 2GB 
 3. GPU - integrated or discrete 
-4. Storage - atleast 1mb/s reads and writes with 2mb free  
+4. Storage - atleast 1mb/s reads and writes with 2mb storage free  
 5. A stable internet connection with atleast 1mb/s up and down
 
 ### Minimum Software Specs:
@@ -21,22 +21,23 @@
 ## To run the game:
 1. CD into the directory where main.py is present.
 2. run pip3 install -r requirements.txt to install the required packages.
-3. run python3 main.py to start a client.(On inital run it will take a f)
-4. either connect to my server at IP:172.105.175.50 and Port:8888 or start your own server by running server.py in a seprate command line window and entering the on screen IP and Port (If you wish to run your own server this requires the deafult port 8888 to be forwarded). To enter the IP and Port just hover over the respective boxes and type the IP or Port.
-5. Choose a name by hovering over the name box and typing what you want to be called(there is a character limit).
-6. Enter the game by clicking Done!
+3. run python3 main.py to start a client.(On inital run it will take a few seconds)
+4. either connect to my server at IP:172.105.175.50 and Port:8888 or start your own server by running server.py in a seprate command line window however your own server will only accept connections from virtual clients on your own computer(these can be started by running main.py in another command line window) the ip and port to this server is printed to the command line.
+5. To connect to a server hover over the IP or Port box and type the respective number(including decimal points with the IP).
+6. Choose a name by hovering over the name box and typing what you want to be called(there is a character limit).
+7. Enter the game by clicking Done!
 
 Screenshots:
 
-1. Installing required libraries 
+1. Installing required libraries:
 	
 	![image](images/image.png)
 
-2. Entering the ip of a server
+2. Entering the ip and port of a server as well as choosing a name:
 
    ![image2](images/image2.png)
 
-3. Ingame 
+3. Ingame:
 
    ![image3](images/image3.png)
 
@@ -63,7 +64,23 @@ Screenshots:
 
 ## Trouble Shooting:
 
-If the game,server or editor is to crash just restart each program and continue where you left off.
+When entering into the game there are 3 types of errors you can encounter:
 
+1. Incorrect IP or Port, if you have entered the incorrect IP or Port the client will change the text in the top left to `Wrong IP/Port!!!!`  to fix this error check the provided IP and Port then re enter it into their respective boxes. 
 
+   Example:
+
+   ![image6](images/image6.png)
+
+2. Name in use, if you have entered a name into its respective box that is being used by another person connected to the server the client will change the text in the top left to `Name in use!!!!` to fix this pick another name and enter it into the respective box.
+
+   Example:
+
+   ![image4](images/image4.png)
+
+3. No name entered, if you have not entered a name into its respective box the client will change the text in the top left to `Choose a name`   to fix this pick a name and enter it into the respective box.
+
+   Example:
+
+   ![image5](images/image5.png)
 

@@ -60,8 +60,6 @@ def drawMessage(screen, state,events,title):
 	if ip is not None:
 		return(ip)
 
-	#if startbutton3.pressed(events):
-		#return(complete2)
 
 
 	
