@@ -129,6 +129,7 @@ def networkthread(clientid):
 	global player1
 	global servertick
 	global tickreverse
+	global state
 
 	while True:
 		try:
@@ -164,6 +165,9 @@ def networkthread(clientid):
 									x.hitpoints = int(split2[7])
 									x.deaths = split2[8]
 									x.timer =split2[9] 
+									x.win = split2[10] 
+									if x.win == "True":
+										state.state = "end"
 
 					if clientid == split2[1]:
 						player1.deaths = split2[8]
@@ -237,6 +241,9 @@ def roomcheck(player1):
 			lockout = True
 			player1.vx = 0
 			deathtimeout = 0
+
+		else:
+			player1.win = True
 			
 	elif player1.x < 3:
 		if player1.room > 0:
@@ -259,6 +266,7 @@ def roomcheck(player1):
 		sock.sendto(data2,server_address)
 
 while True:
+
 	deathtimeout += 1
 	signal.signal(signal.SIGINT, signal_handler)
 	roomcheck(player1)
@@ -360,7 +368,7 @@ while True:
 
 	if player1 is not None:
 		player1.physicsHandler(fps)
-		data2 = "pos;"+str(clientid)+";"+str(player1.x)+";"+str(player1.y)+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+";"+str(int(player1.hitpoints))+"\n"
+		data2 = "pos;"+str(clientid)+";"+str(player1.x)+";"+str(player1.y)+";"+str(int(player1.room))+";"+str(int(player1.activeWeapon))+";"+str(int(player1.angle))+";"+str(int(player1.hitpoints))+";"+str(player1.win)+"\n"
 		data2 = data2.encode('UTF-8')
 		sock.sendto(data2,server_address)
 		if len(messages) > 0:
@@ -371,7 +379,7 @@ while True:
 			messages.remove(messages[0])
 
 		player1.render(screen,clientid)
-		pygame.mouse.set_visible(0)
+		
 		mouseX, mouseY = pygame.mouse.get_pos()
 		
 
@@ -453,7 +461,6 @@ while True:
 			pygame.draw.rect(screen,(153,0,0),rect)
 			rect = pygame.Rect(512-250,320-125,500,250)
 			pygame.draw.rect(screen,(60,60,60),rect)
-			print(multiplays)
 			offset = 0
 			throwaway = list()
 
@@ -470,14 +477,14 @@ while True:
 				
 				if x.index == clientid:
 
-					message = "(You)Name: "+ str(x.name)+" Room:"+str(player1.room)+" Time: "+str(round(int(player1.timer)/120,2))
+					message = "(You)Name: "+ str(x.name)+" Room:"+str(int(player1.room)+1)+" Time: "+str(round(int(player1.timer)/120,2))
 					textSurf = messagefont.render(message , 1, (255,255,255))
 					textRect = pygame.Rect(512-250,320-125, 500, 20)
 					screen.blit(textSurf, textRect)
 
 				else:
 					offset += 1
-					message = "Name: "+ str(x.name)+" Room: "+str(x.room)+" Time: "+str(round(int(x.timer)/120,2))
+					message = "Name: "+ str(x.name)+" Room: "+str(int(x.room)+1)+" Time: "+str(round(int(x.timer)/120,2))
 					textSurf = messagefont.render(message , 1, (255,255,255))
 					textRect = pygame.Rect(512-250,320-125+offset*40, 500, 20)
 					screen.blit(textSurf, textRect)
@@ -513,5 +520,35 @@ while True:
 		screen.blit(char1, (1024-lenofmsg[0] , 10))
 		char3 = titlefont2.render((roomsg2), 1, (255,255,255))
 		screen.blit(char3, (1020-lenofmsg3[0] , 50))
+		if state.state == "end" or player1.win == True:
+			winner = player1
+			pygame.mouse.set_visible(1)
+			if player1.win == "False" or player1.win == False:
+				for x in multiplays:
+					if x.win == "True":
+						winner = x
+
+			keys = pygame.key.get_pressed()
+			screen.fill((128,128,128))
+			pygame.draw.rect(screen, (153,0,0), (0,0,350,85))
+			pygame.draw.rect(screen, (41,41,41), (0,0,320,70))
+			
+			rect = pygame.Rect(370,185, 300, 75)
+			char2 = titlefont2.render(str(winner.name)+" has won ", 1, (255,255,255))
+			char3 = titlefont2.render("In: "+str(round(int(winner.timer)/120,2))+" Secs", 1, (255,255,255))
+			
+			pygame.draw.rect(screen,(60,60,60),rect)
+			screen.blit(char2, (370,185))
+			screen.blit(char3, (370,225))
+			char1 = titlefont.render("The End", 1, (255,255,255))
+			screen.blit(char1, (10, 10))
+			
+			startbutton1 = ui.button("Exit", 370, 285, 300, 75)
+			startbutton1.render(screen)
+			if startbutton1.pressed(events):
+				os._exit(1)
+
+
+
 		pygame.display.flip()
 sock.close()

@@ -46,7 +46,7 @@ def sendPlayerTick(player,addr,socket,tick,rev):
 	socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerPos(player,addr):
-	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+";"+str(int(player.deaths))+";"+str(int(player.timer))+"\n"
+	data = "pos;"+str(player.id)+";"+str(player.x)+";"+str(player.y)+";"+str(int(player.room))+";"+str(int(player.activeWeapon))+";"+str(int(player.angle))+";"+str(int(player.hitpoints))+";"+str(int(player.deaths))+";"+str(int(player.timer))+";"+str(player.win)+"\n"
 	player.socket.sendto(data.encode('UTF-8'),addr)
 
 def sendPlayerMsg(socket,message,addr,name):
@@ -91,7 +91,8 @@ def timeout():
 		for p in players:
 			sendPlayerTick(p,p.addr,p.socket,tick,reverse)
 			p.timeout += 1
-			p.timer += 1
+			if p.win == "False":
+				p.timer += 1
 			if p.timeout > 300:
 				for x in players:
 					sendPlayerLeave(p,x.addr,x.socket)
@@ -116,6 +117,7 @@ class Player:
 		self.angle = 0
 		self.hitpoints = 100
 		self.timer = 0
+		self.win = "False"
 		self.deaths = 0
 
 class Bullet:
@@ -189,6 +191,7 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 						players[i].activeWeapon = split[5]
 						players[i].angle = split[6]
 						players[i].hitpoints = split[7]
+						players[i].win = split[8]
 
 					for p in players:
 						#if str(p.id) != str(players[i].id):

@@ -37,6 +37,7 @@ class actor:
 		self.hitpoints = 100
 		self.deaths = 0
 		self.timer = 0
+		self.win = False
 		numbs = []
 		for word in self.index:
 			if word.isdigit():
