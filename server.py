@@ -215,15 +215,11 @@ class MyUDPHandler(socketserver.DatagramRequestHandler):
 		elif split[0] == 'die':
 			for p in players:
 				sendPlayerDie(socket,p.addr,split[1])
-				if str(p.id) == split[2]:
-					p.deaths +=1
 
 		elif split[0] == 'killed':
 			for p in players:
 				sendPlayerKilled(socket,p.addr,split[1],split[2])
-				if p.id == split[2]:
-					p.deaths +=1
-
+				
 		elif split[0] == 'start':
 			for p in players:
 				if p.name == split[1]:
